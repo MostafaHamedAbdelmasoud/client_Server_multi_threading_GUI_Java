@@ -9,6 +9,7 @@ import fileserver_distributed.CustomFileVisitor;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.FileChannel;
 import java.text.*;
@@ -39,10 +40,14 @@ public class Home extends javax.swing.JFrame {
     private String cdAhlam;
     private ArrayList<String> cdLists;
     private String pathForOperation , ContinuedPathForOperation;
-    private Socket s ;
+    private Socket s;
     private DataInputStream dis;
     private DataOutputStream dos;
-    private String srvr_msg ;  
+    private String srvr_msg;
+    private ServerSocket sv;
+
+    
+    
     /**
      * Creates new form Home
      */
@@ -129,36 +134,209 @@ public class Home extends javax.swing.JFrame {
 }
     
     public Home(String path) {
-//        initComponents();
-      
-        try{
-//           s = new Socket("192.168.43.250", 1234);
-           s = new Socket("127.0.0.1", 1234);
-           dis = new DataInputStream(s.getInputStream());
-           dos = new DataOutputStream(s.getOutputStream());
-           initComponents();
-           setSize(750,505);
-           setLocation(100,100);
-           setResizable(false);
-           this.PathNow = path;
-           this.allPaths = "";
-           
-//            srvr_msg = dis.readUTF();  
-            System.out.println("this is from home!");
-       
-    //          JOptionPane.showMessageDialog(null,getCwd()+"/"+path+"/home");
-              JOptionPane.showMessageDialog(null,getCwd());
-              this.cdAhlam= getCwd();
-    //          JOptionPane.showMessageDialog(null,getPathNow());
-              String [] collapeCommands = {"cd","mkdir","ls","rmdir","pwd","cp","rnm","rm","mv"};
-            jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(collapeCommands));
-            trimPaths(path);
-//            dos.writeUTF("hd");
-//            dos.flush();
+        try
+        {
+            
+            sv = new ServerSocket(1234);
+             
+             s = sv.accept();
+           dis  = new DataInputStream(s.getInputStream());
+             dos  = new DataOutputStream(s.getOutputStream());
+            initComponents();
+                setSize(750,505);
+               setLocation(100,100);
+               setResizable(false);
+              this.PathNow = path;
+              this.allPaths = "";
+                System.out.println("this is fuckin home!");
+       //          JOptionPane.showMessageDialog(null,getCwd()+"/"+path+"/home");
+                 JOptionPane.showMessageDialog(null,getCwd());
+                 this.cdAhlam= getCwd();
+       //          JOptionPane.showMessageDialog(null,getPathNow());
+                 String [] collapeCommands = {"cd","mkdir","ls","rmdir","pwd","cp","rnm","rm","mv"};
+               jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(collapeCommands));
+               trimPaths(path);
+               while(true){
+               String assal = dis.readUTF();
+               System.out.println("succesfuuly received"+assal);
+               if(assal.equals("mkdir"))
+               {
+                   assal = dis.readUTF();
+                   createDirectory(addPAth(assal).concat(""));
+                   try{
+                    dos.writeUTF(returnlistdirectoriesasstring());
+                    dos.flush();
+                        System.out.println("data sent");
+                    }
+            catch(Exception ex)
+                    {
+                        System.out.println("error in making directory");
+                    }  
+                   
+               }
+               else if(assal.equals("ls"))
+               {
+                   
+                    try{
+                    dos.writeUTF(returnlistdirectoriesasstring());
+                    dos.flush();
+                        System.out.println("data sent");
+                    }
+            catch(Exception ex)
+                    {
+                        System.out.println("error in listing directory");
+                    }      
+                   
+               }
+               else if(assal.equals("cd")){
+                  assal =  dis.readUTF();
+                   separateInputsFromUser(assal, true, "none");
+                    try{
+                    dos.writeUTF(returnlistdirectoriesasstring());
+                    dos.flush();
+                        System.out.println("data sent");
+                    }
+            catch(Exception ex)
+                    {
+                        System.out.println("error in listing directory");
+                    } 
+               }
+               
+               else if(assal.equals("rmdir")){
+                  assal =  dis.readUTF();
+                   OkToRemove(assal,true);
+                    try{
+                    dos.writeUTF(returnlistdirectoriesasstring());
+                    dos.flush();
+                        System.out.println("data sent");
+                    }
+                    catch(Exception ex)
+                    {
+                        System.out.println("error in removing directory");
+                    } 
+               }
+                   else if(assal.equals("pwd")){
+                        trimPaths(PathNow);
+                       try{
+                            dos.writeUTF(ContinuedPathForOperation);
+                            dos.flush();
+                            System.out.println("data sent");
+                       }
+                        catch(Exception ex){
+                           System.out.println("error in removing directory");
+                       } 
+                    }
+                   
+                    else if(assal.equals("cp")){
+                       listDirectories(true);
+                           try{
+                               assal = dis.readUTF();
+                              String ho =  separateInputsFromUser(assal,false,"cp");
+//                               String common = dis.readUTF();
+                              if(ho.equals("failed")){
+//                                  JOptionPane.showMessageDialog(null, "try again");
+                                  dos.writeUTF("failed");
+                                  dos.flush();
+                              }
+                              else{
+                                   dos.writeUTF("successed");
+                                  dos.flush();
+//                                  JOptionPane.showMessageDialog(null, "successful operation.");
+       //                                jTextArea1.setText(cdAhlam);
+                              }
+                           }
+                           catch(Exception e){
+                               JOptionPane.showMessageDialog(null, e.getMessage());
+                           }
+                    }
+                else if(assal.equals("rnm")){
+                       listDirectories(true);
+                           try{
+                               assal = dis.readUTF();
+                              String ho =  separateInputsFromUser(assal,false,"rnm");
+//                               String common = dis.readUTF();
+                              if(ho.equals("failed")){
+//                                  JOptionPane.showMessageDialog(null, "try again");
+                                  dos.writeUTF("failed");
+                                  dos.flush();
+                              }
+                              else{
+                                   dos.writeUTF("successed");
+                                  dos.flush();
+//                                  JOptionPane.showMessageDialog(null, "successful operation.");
+       //                                jTextArea1.setText(cdAhlam);
+                              }
+                           }
+                           catch(Exception e){
+                               JOptionPane.showMessageDialog(null, e.getMessage());
+                           }
+                    }
+                
+                        else if(assal.equals("rm")){
+                            listDirectories(true);
+                                try{
+                                    assal = dis.readUTF();
+                                   boolean ho =  OkToRemove(assal,false);
+                                    if(!ho){
+//                                        JOptionPane.showMessageDialog(null, "file name is not exist!");
+                                         dos.writeUTF("failed");
+                                        dos.flush();
+                                    }
+                                    else{
+//                                        JOptionPane.showMessageDialog(null, "successful operation.");
+                                            dos.writeUTF("successed");
+                                            dos.flush();
+             //                                jTextArea1.setText(cdAhlam);
+                                    }
+                                }
+                                catch(Exception e){
+                                    JOptionPane.showMessageDialog(null, e.getMessage());
+                                }
+                        }
+                        
+                         else if(assal.equals("mv")){
+                            listDirectories(true);
+                                try{
+                                    assal = dis.readUTF();
+                                   String ho =  separateInputsFromUser(assal,false,"mv");
+                                    if(ho.equals("failed")){
+                                        dos.writeUTF("failed");
+                                        dos.flush();
+//                                        JOptionPane.showMessageDialog(null, "try again");
+                                    }
+                                    else{
+                                            dos.writeUTF("successed");
+                                            dos.flush();
+//                                        JOptionPane.showMessageDialog(null, "successful operation.");
+             //                                jTextArea1.setText(cdAhlam);
+                                    }
+                                }
+                                catch(Exception e){
+                                    JOptionPane.showMessageDialog(null, e.getMessage());
+                                }
+                        }
+               
+               
+               
+               
+               
+               
+               else{
+                   System.out.println("jdj");
+               }
+                trimPaths(PathNow);
+                dos.writeUTF(ContinuedPathForOperation);
+                dos.flush();
+               }
+            
+
         }
-        catch(IOException ex){
-             JOptionPane.showMessageDialog(null,"problem occured during connecting to server: "+ex.getMessage());
+        catch(IOException ex)
+        {
+           JOptionPane.showMessageDialog(null,"problem occured during connection: "+ex.getMessage());
+
         }
+        
     }
     
     private static void createDirectory(String pathName){
@@ -218,7 +396,8 @@ public class Home extends javax.swing.JFrame {
     }
     public String getCwd() {
 //        File file = new File("");
-        File file = new File("/home/mostafa/NetBeansProjects/fileserver_distributed/"+this.PathNow+"/home/");
+//        File file = new File("home/mostafa/NetBeansProjects/fileserver_distributed_server/"+this.PathNow+"/home/");
+        File file = new File("/home/mostafa/NetBeansProjects/fileserver_distributed_server/"+this.PathNow+"/home/");
         String path = file.getAbsolutePath();
            this.PublicPathNow= path;
         return path;
@@ -253,7 +432,20 @@ public class Home extends javax.swing.JFrame {
         os.close();
     }
 }
-    
+    public String returnlistdirectoriesasstring(){
+        String dirs [] = listDirectories(false);
+        String items = "";
+        for(int i=0;i< dirs.length;i++)
+        {
+            items += dirs[i];
+            items += '\n';
+        }
+        
+        return items;
+         
+        
+        
+    }
     
     public boolean checkONNameAndMakeOperation(ArrayList<String> ArrayLst,String operationType){
         try{
@@ -621,6 +813,7 @@ public class Home extends javax.swing.JFrame {
                          
                     }
                 jTextArea1.setText(textareainput);
+                
                 return directories;
     }
     
@@ -762,26 +955,15 @@ public class Home extends javax.swing.JFrame {
                    }
                     else{
 
-//                         createDirectory(addPAth(TypedName).concat(""));
-                           dos.writeUTF("mkdir");
-                            dos.flush();
-                            dos.writeUTF(TypedName);
-                            dos.flush();
-                            String common = dis.readUTF();
-                            System.out.println(common);
-                            jTextArea1.setText(common);
-         //                  listDirectories(false);
+                         createDirectory(addPAth(TypedName).concat(""));
+
                     }
-                   
+                  listDirectories(false);
             }
             else if(commandName.equals("ls")){
                     jTextField2.setText("");
-                    dos.writeUTF("ls");
-                    dos.flush();
-                    String common = dis.readUTF();
-//                    System.out.println(getPathNow());
-                     jTextArea1.setText(common);
-//                   listDirectories(false);
+                    System.out.println(getPathNow());
+                   listDirectories(false);
             }
             else if(commandName.equals("rmdir")){
                 String removedDir = jTextField2.getText();
@@ -790,17 +972,11 @@ public class Home extends javax.swing.JFrame {
                        JOptionPane.showMessageDialog(null, "please enter all fields");
                    }
                     else{
-                        dos.writeUTF("rmdir");
-                        dos.flush();
-                        dos.writeUTF(removedDir);
-                        dos.flush();
-                        String common = dis.readUTF();
-//                    System.out.println(getPathNow());
-                     jTextArea1.setText(common);
-//                         OkToRemove(removedDir,true);
+
+                         OkToRemove(removedDir,true);
 
                     }
-//                listDirectories(false);
+                listDirectories(false);
             }
             else if(commandName.equals("cd")){
                 String PathTyped = jTextField2.getText();
@@ -810,14 +986,8 @@ public class Home extends javax.swing.JFrame {
                        JOptionPane.showMessageDialog(null, "please enter all fields");
                    }
                     else{
-//                     separateInputsFromUser(PathTyped,true,"none");
+                     separateInputsFromUser(PathTyped,true,"none");
 //                         OkToRemove(removedDir);
-                        dos.writeUTF("cd");
-                        dos.flush();
-                        dos.writeUTF(PathTyped);
-                        dos.flush();
-                        String common = dis.readUTF();
-                        jTextArea1.setText(common);
 
                     }
                 
@@ -829,11 +999,8 @@ public class Home extends javax.swing.JFrame {
 //                       JOptionPane.showMessageDialog(null, "please enter all fields");
 //                   }
                     try{
-                        dos.writeUTF("pwd");
-                        dos.flush();
 //                                jTextArea1.setText(cdAhlam);
-                                    String common = dis.readUTF();
-                                jTextArea1.setText(common);
+                                jTextArea1.setText(this.ContinuedPathForOperation);
                     }
                     catch(Exception e){
                         JOptionPane.showMessageDialog(null, e.getMessage());
@@ -841,21 +1008,15 @@ public class Home extends javax.swing.JFrame {
                 
             }
             else if(commandName.equals("cp")){
-                
                 String folderTyped = jTextField2.getText();
-//                listDirectories(true);
+                listDirectories(true);
                  if(folderTyped.trim().isEmpty()){
                        JOptionPane.showMessageDialog(null, "please enter all fields");
                    }
                     try{
-                        dos.writeUTF("cp");
-                        dos.flush();
-                        dos.writeUTF(folderTyped);
-                        dos.flush();
-//                       String ho =  separateInputsFromUser(folderTyped,false,"cp");
-                        String common = dis.readUTF();
-                       if(common.equals("failed")){
-                           JOptionPane.showMessageDialog(null, "check path/name ,try again");
+                       String ho =  separateInputsFromUser(folderTyped,false,"cp");
+                       if(ho.equals("failed")){
+                           JOptionPane.showMessageDialog(null, "try again");
                        }
                        else{
                             
@@ -871,20 +1032,15 @@ public class Home extends javax.swing.JFrame {
             
             
             else if(commandName.equals("rnm")){
-                dos.writeUTF("rnm");
-                dos.flush();
                 String folderTyped = jTextField2.getText();
-//                listDirectories(true);
+                listDirectories(true);
                  if(folderTyped.trim().isEmpty()){
                        JOptionPane.showMessageDialog(null, "please enter all fields");
                    }
                     try{
-//                       String ho =  separateInputsFromUser(folderTyped,false,"rnm");
-                           dos.writeUTF(folderTyped);
-                            dos.flush();
-                            String common = dis.readUTF();
-                       if(common.equals("failed")){
-                           JOptionPane.showMessageDialog(null, "check path/name ,try again");
+                       String ho =  separateInputsFromUser(folderTyped,false,"rnm");
+                       if(ho.equals("failed")){
+                           JOptionPane.showMessageDialog(null, "try again");
                        }
                        else{
                             
@@ -900,21 +1056,18 @@ public class Home extends javax.swing.JFrame {
             
             else if(commandName.equals("rm")){
                 String folderTyped = jTextField2.getText();
-//                listDirectories(true);
+                listDirectories(true);
                  if(folderTyped.trim().isEmpty()){
                        JOptionPane.showMessageDialog(null, "please enter all fields");
                    }
                     try{
-                        dos.writeUTF("rm");
-                        dos.flush();
-                        dos.writeUTF(folderTyped);
-                        dos.flush();
-                         String common = dis.readUTF();
-                       if(common.equals("failed")){
+                       boolean ho =  OkToRemove(folderTyped,false);
+                       if(!ho){
                            JOptionPane.showMessageDialog(null, "file name is not exist!");
                        }
                        else{
                            JOptionPane.showMessageDialog(null, "successful operation.");
+//                                jTextArea1.setText(cdAhlam);
                        }
                     }
                     catch(Exception e){
@@ -925,21 +1078,19 @@ public class Home extends javax.swing.JFrame {
             
              else if(commandName.equals("mv")){
                 String folderTyped = jTextField2.getText();
-//                listDirectories(true);
+                listDirectories(true);
                  if(folderTyped.trim().isEmpty()){
                        JOptionPane.showMessageDialog(null, "please enter all fields");
                    }
                     try{
-                         dos.writeUTF("mv");
-                        dos.flush();
-                        dos.writeUTF(folderTyped);
-                        dos.flush();
-                        String common = dis.readUTF();
-                       if(common.equals("failed")){
-                           JOptionPane.showMessageDialog(null, "file name is not exist!");
+                       String ho =  separateInputsFromUser(folderTyped,false,"mv");
+                       if(ho.equals("failed")){
+                           JOptionPane.showMessageDialog(null, "try again");
                        }
                        else{
+                            
                            JOptionPane.showMessageDialog(null, "successful operation.");
+//                                jTextArea1.setText(cdAhlam);
                        }
                     }
                     catch(Exception e){
@@ -950,11 +1101,10 @@ public class Home extends javax.swing.JFrame {
                      
             
           
-         jTextField2.setText("");
 //            trimPaths(PathNow);
-            String pathTrimed = dis.readUTF();
-            
-         jTextArea3.setText(pathTrimed);
+//            dos.writeUTF(ContinuedPathForOperation);
+//            dos.flush();
+//         jTextArea3.setText(ContinuedPathForOperation);
         }
        catch(Exception e){
 //           System.out.println(getPathNow());
@@ -993,7 +1143,7 @@ public class Home extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Home(PathNow).setVisible(true);
+                new Home(PathNow ).setVisible(true);
             }
         });
     }
