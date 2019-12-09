@@ -5,6 +5,10 @@
  */
 package fileserver_distributed;
 import fileserver_distributed.Fileserver_distributed;
+import fileserver_distributed.Data;
+import fileserver_distributed.filterImages;
+import java.awt.image.ImageFilter;
+
 //package CustomFileVisitor;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
@@ -22,10 +26,14 @@ import java.util.*;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
+import javax.swing.JFileChooser;
 
 
-    
+import javax.swing.filechooser.*;
    
+
+
+
 
 
 /**
@@ -43,7 +51,7 @@ public class Home extends javax.swing.JFrame {
     /**
      * Creates new form Home
      */
-    
+    private String [] Stats = {"Image","File"};
     
    
   
@@ -58,19 +66,80 @@ public class Home extends javax.swing.JFrame {
         try{
             this.PathNow = path;
            initComponents();
-           setSize(750,505);
+           setSize(752,505);
            setLocation(100,100);
            setResizable(false);
            
 //            srvr_msg = dis.readUTF();  
             System.out.println("this is from home!");
-              String [] collapeCommands = {"cd","mkdir","ls","rmdir","pwd","cp","rnm","rm","mv"};
+              String [] collapeCommands = {"cd","mkdir","ls","rmdir","pwd","cp","rnm","rm","mv","download"};
+//              String [] Stats = {"Image","File"};
+              
             jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(collapeCommands));
+            jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(Stats));
         }
         catch(Exception ex){
              JOptionPane.showMessageDialog(null,"problem occured during connecting to server: "+ex.getMessage());
         }
     }
+    
+    
+//    public void acceptDownload(){
+//        try{
+//            int filesize=1022386; 
+//            int bytesRead; 
+//            int currentTot = 0; 
+//    //        Socket socket = new Socket("127.0.0.1",15123); 
+//            byte [] bytearray = new byte [filesize]; 
+//    //        InputStream is = socket.getInputStream(); 
+//            FileOutputStream fos = new FileOutputStream("copy.doc"); 
+//            BufferedOutputStream bos = new BufferedOutputStream(fos); 
+//            bytesRead = dis.read(bytearray,0,bytearray.length); 
+//            currentTot = bytesRead; 
+//            do { 
+//                bytesRead = dis.read(bytearray, currentTot, (bytearray.length-currentTot)); 
+//                if(bytesRead >= 0) currentTot += bytesRead; 
+//            } while(bytesRead > -1); 
+//            bos.write(bytearray, 0 , currentTot);
+//            bos.flush(); 
+//
+//            bos.close(); 
+//    //        socket.close();
+//        }
+//        catch(Exception ex){
+//           JOptionPane.showMessageDialog(null, ex.getMessage());
+//
+//        }
+//    //Read more: http://mrbool.com/file-transfer-between-2-computers-with-java/24516#ixzz67cpqJzdX
+//    }
+//    
+    private ObjectOutputStream out;
+    public void acceptDownload(String FileUploaded){
+        try {
+            
+            out = new ObjectOutputStream(s.getOutputStream());
+            out.writeObject("mostafa");
+            out.flush();
+            JFileChooser ch = new JFileChooser();
+            int c = ch.showOpenDialog(this);
+            if (c == JFileChooser.APPROVE_OPTION) {
+                File f = ch.getSelectedFile();
+                FileInputStream in = new FileInputStream(f);
+                byte b[] = new byte[in.available()];
+                in.read(b);
+                Data data = new Data();
+                data.setStatus(jComboBox2.getSelectedItem() + "");
+                data.setName(FileUploaded);
+                data.setFile(b);
+                out.writeObject(data);
+                out.flush();
+//                txt.append("send 1 file ../n");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
     
     
     
@@ -92,6 +161,8 @@ public class Home extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea3 = new javax.swing.JTextArea();
+        jComboBox2 = new javax.swing.JComboBox<>();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(231, 231, 232));
@@ -137,25 +208,50 @@ public class Home extends javax.swing.JFrame {
         jTextArea3.setRows(5);
         jScrollPane1.setViewportView(jTextArea3);
 
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Image" }));
+        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("Upload");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(296, 296, 296))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(85, 85, 85)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 469, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(196, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(296, 296, 296))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(22, 22, 22))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 333, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 154, Short.MAX_VALUE)
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
+                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(55, 55, 55)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(32, 32, 32))
         );
@@ -369,6 +465,37 @@ public class Home extends javax.swing.JFrame {
                     }
                 
             }
+             
+             else if(commandName.equals("downlaod")){
+                String folderTyped = jTextField2.getText();
+//                listDirectories(true);
+                 if(folderTyped.trim().isEmpty()){
+                       JOptionPane.showMessageDialog(null, "please enter all fields");
+                   }
+                    try{
+                         dos.writeUTF("download");
+                        dos.flush();
+                        
+                        dos.writeUTF(folderTyped);
+                        dos.flush();
+//                        acceptDownload();
+                        String common = dis.readUTF();
+                       if(common.equals("notFound")){
+                           JOptionPane.showMessageDialog(null, "file name is not exist!");
+                       }
+                       else if(common.equals("successed")){
+                           JOptionPane.showMessageDialog(null, "successful operation.");
+                       }
+                       else{
+                           JOptionPane.showMessageDialog(null, "failed to download");
+                       }
+                    }
+                    catch(Exception e){
+                        JOptionPane.showMessageDialog(null, e.getMessage());
+                    }
+                
+            }
+             
                      
             
           
@@ -384,6 +511,76 @@ public class Home extends javax.swing.JFrame {
            JOptionPane.showMessageDialog(null, e.getMessage());
        }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+//        while(true){
+        String folderTyped = jTextField2.getText();
+//                listDirectories(true);
+     
+           if(folderTyped.trim().isEmpty()){
+               JOptionPane.showMessageDialog(null, "please enter a name for youe uploades first");
+          }
+           else{
+        
+                try {
+                    dos.writeUTF("upload");
+                    dos.flush();
+                    out = new ObjectOutputStream(s.getOutputStream());
+                    FileInputStream in;
+        //            out.writeObject("mostafa");
+        //            out.flush();
+                    JFileChooser ch = new JFileChooser();
+                    String stst = jComboBox2.getSelectedItem().toString();
+                    
+                    if(stst.equals("Image")){
+                            ch.addChoosableFileFilter(new filterImages());
+                             ch.setAcceptAllFileFilterUsed(false);
+                    }
+                   
+                    int c = ch.showOpenDialog(this);
+                    if (c == JFileChooser.APPROVE_OPTION) {
+                        File f = ch.getSelectedFile();
+                         in = new FileInputStream(f);
+                        byte b[] = new byte[in.available()];
+                        in.read(b);
+                        Data data = new Data();
+                        data.setStatus(jComboBox2.getSelectedItem().toString());
+                        
+                        
+                        data.setName(folderTyped);
+                        data.setFile(b);
+                        System.out.println(data.getFile());
+//                        this.dispose();
+                    ch.setVisible(false);
+//                 new Home(this.PathNow).setVisible(true);
+                        out.writeObject(data);
+                        out.flush();
+        //                txt.append("send 1 file ../n");
+                        
+                    }
+//                    out.close();
+//                    in.close(); 
+//out.close();
+//                this.dispose();
+//                ch.setVisible(false);
+//                 new Home(this.PathNow).setVisible(true);
+                    jTextField2.setText("");
+        //            trimPaths(PathNow);
+        ch.setVisible(false);
+                    String pathTrimed = dis.readUTF();
+                       
+                 jTextArea3.setText(pathTrimed);
+                 
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, e, "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                 }
+//           }
+    }//GEN-LAST:event_jButton3ActionPerformed
+   
+    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -422,7 +619,9 @@ public class Home extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton3;
     private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;

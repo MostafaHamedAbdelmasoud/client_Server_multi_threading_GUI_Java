@@ -64,6 +64,7 @@ public class Register extends javax.swing.JFrame {
         jTextField4 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setAlwaysOnTop(true);
         setBackground(java.awt.Color.pink);
 
         label1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
