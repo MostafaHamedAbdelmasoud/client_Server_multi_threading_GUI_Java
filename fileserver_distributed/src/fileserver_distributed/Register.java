@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package fileserver_distributed;
+import fileserver_distributed.Fileserver_distributed;
 
 
 import java.util.ArrayList;
@@ -24,108 +25,24 @@ import java.util.Scanner;
  * @author mostafa
  */
 public class Register extends javax.swing.JFrame {
-    private Socket s ;
-    private DataInputStream dis;
-    private DataOutputStream dos;
+    private Socket s = Fileserver_distributed.s;
+    private DataInputStream dis= Fileserver_distributed.dis;
+    private DataOutputStream dos= Fileserver_distributed.dos ;
     private String srvr_msg ;  
     /**
      * Creates new form Register
      */
     public Register() {
         try{
-            s = new Socket("127.0.0.1", 1234);
-//            s = new Socket("192.168.43.250", 1234);
-           dis = new DataInputStream(s.getInputStream());
-           dos = new DataOutputStream(s.getOutputStream());
+//            System.out.println(dis.read());
             System.out.println("client Side");
-            System.out.println(dis.readUTF());
+//            System.out.println(dis.readUTF());
             initComponents();
-//           users = new ArrayList<user>();
-//           populateArrayList();
         }
-        catch(IOException ex){
-            try{
-                JOptionPane.showMessageDialog(null,"some thing happend during connection!");
-
-            }
-            catch(Exception e){
+        catch(Exception ex){
                 JOptionPane.showMessageDialog(null, "some thing happend in client side!");
-            }
-          
-
         }
     }
-    
-    
-//    
-//     public void populateArrayList(){
-//        try {
-////            this.users.addAll(this.dis.readUTF());
-//             String lol = this.dis.readUTF();
-//            FileInputStream file = new FileInputStream(this.srvr_msg);
-//            
-//            ObjectInputStream inputFile = new ObjectInputStream(file);
-//            boolean endOfFile = false;
-//            while (!endOfFile) {                
-//                try {
-//                    users.add((user)inputFile.readObject());
-//                } catch (EOFException e) {
-//                    endOfFile = true;
-//                }
-//                catch (Exception f) {
-////                    JOptionPane.showMessageDialog(null, f.getMessage());
-//                    JOptionPane.showMessageDialog(null, f.getMessage());
-//                }
-//            }
-//            inputFile.close();
-//            
-//        } catch (IOException e) {
-//            JOptionPane.showMessageDialog(null, e.getMessage());
-//        }
-//    }
-//    
-//     
-//     
-//    public void saveUsersToFile(){
-//        try {
-//            FileOutputStream file = new FileOutputStream("users.dat");
-//            ObjectOutputStream outputFile = new ObjectOutputStream(file);
-//            
-//            for (int i = 0; i < users.size(); i++) {
-//                outputFile.writeObject(users.get(i));
-//            }
-//            outputFile.close();
-//            JOptionPane.showMessageDialog(null, "succefuly Registered!");
-//            
-//            new Home(Integer.toString(users.size())).setVisible(true);
-//            this.dispose();
-//            
-//        } catch (IOException e) {
-////            JOptionPane.showMessageDialog(null, "hello t");
-//            JOptionPane.showMessageDialog(null, e.getMessage());
-//        }
-//         catch (Exception e) {
-////            JOptionPane.showMessageDialog(null, "hello t");
-//            JOptionPane.showMessageDialog(null, e.getMessage());
-//        }
-//    }
-//    
-//    
-//    private static void createDirectory(String pathName){
-//        File files = new File(pathName);
-//        if(!files.exists()){ //if the file folder does not exist
-//            if(files.mkdirs()){ //if you want to create sub folder. you can change mkdir to mkdirs
-//                System.out.println("Directory Created in"+files.getAbsolutePath());
-//            }
-//            else{
-//                System.out.println("Problem Occured creating directory"); 
-//            }
-//        }
-//        else{
-//            System.out.println("Directory "+files.getAbsolutePath()+" already exist !");
-//        }
-//    }
-//    
     
     
     /**
@@ -243,34 +160,6 @@ public class Register extends javax.swing.JFrame {
             else{
                 try{
                     String AlreadyReg = "false";
-//                    System.out.println(dis.readUTF());
-//                    System.out.println(dis.readUTF());
-//                    if(dis.readUTF().equals("error during fetching users!")){
-//                        System.out.println(dis.readUTF());
-//                        this.dispose();
-//                        new Register().setVisible(true);
-//                    }
-//                    for (int i = 0; i < users.size(); i++) {
-//                        if(email.equals(users.get(i).getEmail())){
-//                            JOptionPane.showMessageDialog(null, "you are already registered!");
-//                            jTextField4.setText(null);
-//                            jTextField3.setText(null);
-//                            this.dispose();
-//                            AlreadyReg = true;
-//                            break;
-//                        }
-//                    }
-//                    AlreadyReg = dis.readUTF();
-//                    
-//                    if(AlreadyReg.equals("true")){
-//                        JOptionPane.showMessageDialog(null, "you are already registered!");
-//                        this.dispose();
-//                        new login().setVisible(true);
-//                    }
-                    
-//                    else{
-                        
-//                        try{
                               int []indx = new int [200];
                             Arrays.fill(indx, 0);
                             
@@ -292,8 +181,7 @@ public class Register extends javax.swing.JFrame {
                                 System.out.println(dis.readUTF());
                                 dos.writeUTF(password);
                                 dos.flush();
-//                                  AlreadyReg = dis.readUTF();
-//                                System.out.println("true!");
+                                
                             String lol  = dis.readUTF();
                                 System.out.println(lol);
                                 
@@ -303,26 +191,15 @@ public class Register extends javax.swing.JFrame {
                                         new login().setVisible(true);
                                        
                                     }
-//                                String stateOfRegister = dis.readUTF();
+//                                
                                     
                                  else if(lol.equals("succefuly Registered!"))
                                 {
                                     
                                    String users_size = dis.readUTF();
-//                                    new Home(Integer.toString(users.size())).setVisible(true);
+//                                    
                                     System.out.println("from successfuly registe!"+lol);
-//                                    System.out.println("from successfuly registe!"+dis.readUTF());
-                                    try{
-                                    if(dis!=null)
-                                        dis.close();
-                                     if(dos!=null)
-                                        dos.close();
-                                     if(s!=null)
-                                        s.close();
-                                    }
-                                    catch(Exception ex){
-                                        JOptionPane.showMessageDialog(null, "refused to close!");
-                                    }
+                                   
                                     this.dispose();
                                     new Home(users_size).setVisible(true);
                                     
@@ -332,40 +209,18 @@ public class Register extends javax.swing.JFrame {
                                 else{
                                     JOptionPane.showMessageDialog(null, "failed to register!");
                                 }
-//                                user newUser = new user((String)email ,(String) password);
-//                                       users.add(newUser);
-////                                       new folder(newUser.getId())
-//                                       createDirectory("/home/mostafa/NetBeansProjects/fileserver_distributed/"+users.size()+"/home");
-//                                       
-//                                       saveUsersToFile();   
+//                              
                            }
                            else{
                                 JOptionPane.showMessageDialog(null,"this email is not valid");
-           //                        throw new Exception("not valid email");
                                    this.dispose();
                                    new Register().setVisible(true);
                             }
                             
-                            
-//                           user newUser = new user((String)email ,(String) password);
-//                            users.add(newUser);
-//                            saveUsersToFile();
-//                        }
-//                        catch(Exception e){
-//                            JOptionPane.showMessageDialog(null, e.getMessage());
-//
-//                }
-                   
-//                    }
-//                    dis.close();
-//                    dos.close();
-//                    s.close();
-//                    new Home().setVisible(true);
-//                    this.dispose();
+                        
                 }
             
                 catch(IOException e){
-//                    JOptionPane.showMessageDialog(null, e.getMessage());
                     JOptionPane.showMessageDialog(null, "after try something happen!");
 
                 }

@@ -5,13 +5,11 @@
  */
 package fileserver_distributed;
 
-
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.io.*;
 import java.text.*;
 import java.util.Arrays;
-
 
 import java.io.File;
 import java.net.ServerSocket;
@@ -25,72 +23,63 @@ import java.util.Scanner;
  * @author mostafa
  */
 public class Register extends javax.swing.JFrame {
+
     ArrayList<user> users;
-    ServerSocket sv;
-    Socket s ;
-    private DataInputStream dis;
-    private DataOutputStream dos ;
+   private ServerSocket sv = Fileserver_distributed.sv;
+    private Socket s = Fileserver_distributed.s;
+    private DataInputStream dis= Fileserver_distributed.dis;
+    private DataOutputStream dos= Fileserver_distributed.dos ;
+
     /**
      * Creates new form Register
      */
     public Register() {
         System.out.println("server Side");
 
-        try{
-            
-            sv = new ServerSocket(1234);
-             Socket s = sv.accept();
-             
-             dis  = new DataInputStream(s.getInputStream());
-             dos  = new DataOutputStream(s.getOutputStream());
-             System.out.println("server Side");
-             dos.writeUTF("successful connection");
-            dos.flush();
+        try {
             initComponents();
             users = new ArrayList<user>();
             populateArrayList();
-            
+
             checkForRegister();
             System.out.println(users.size());
-            }
-        
-        catch(IOException ex){
+        } catch (Exception ex) {
             System.out.println("some thing happened during connection with server");
 
-                }
-   
+        }
+
     }
-     public void populateArrayList(){
+
+    public void populateArrayList() {
         try {
             FileInputStream file = new FileInputStream("users.dat");
             ObjectInputStream inputFile = new ObjectInputStream(file);
             boolean endOfFile = false;
-            while (!endOfFile) {                
+            while (!endOfFile) {
                 try {
-                    users.add((user)inputFile.readObject());
+                    users.add((user) inputFile.readObject());
                 } catch (EOFException e) {
                     endOfFile = true;
-                }
-                catch (Exception f) {
+                } catch (Exception f) {
 //                    JOptionPane.showMessageDialog(null, f.getMessage());
 //                    JOptionPane.showMessageDialog(null, f.getMessage());
-                    dos.writeUTF("error during fetching users!");
-                    dos.flush();
+//                    dos.writeUTF("error during fetching users!");
+//                    dos.flush();
                 }
             }
             inputFile.close();
-            
+
         } catch (IOException e) {
 //            JOptionPane.showMessageDialog(null, e.getMessage());
             JOptionPane.showMessageDialog(null, "oops3!");
         }
     }
-    
-    public void saveUsersToFile(){
+
+    public void saveUsersToFile() {
         try {
             FileOutputStream file = new FileOutputStream("users.dat");
             ObjectOutputStream outputFile = new ObjectOutputStream(file);
-            
+
             for (int i = 0; i < users.size(); i++) {
                 outputFile.writeObject(users.get(i));
             }
@@ -98,133 +87,106 @@ public class Register extends javax.swing.JFrame {
 //            JOptionPane.showMessageDialog(null, "succefuly Registered!");
             dos.writeUTF("succefuly Registered!");
             dos.flush();
-            
-            
-            dos.writeUTF(users.size()+"");
+
+            dos.writeUTF(users.size() + "");
             dos.flush();
-        
+
 //            s.close();
 //            sv.close();
             System.out.println("ready to close");
+//            System.out.println(dis.read());
             
-            try{
-//                
-              if(dis!=null) {
-//                  System.out.println(dis.readUTF());
-                  dis.close();
-              
-              }
-              if(dos!=null){ 
-//                   System.out.println(dos.readUTF());
-                  dos.close();
-              }
-              if(s!=null) s.close();
-              if(sv!=null) sv.close();
-            }
-            catch(Exception s){
-                  JOptionPane.showMessageDialog(null, "refused to close!");
-//
-            }
-           new Home(Integer.toString(users.size()));
+            new Home(Integer.toString(users.size()));
 //            new Home(Integer.toString(users.size())).setVisible(true);
-            
+
             this.dispose();
-            
+
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "hello t");
 //            JOptionPane.showMessageDialog(null, e.getMessage());
-        }
-         catch (Exception e) {
+        } catch (Exception e) {
 //            JOptionPane.showMessageDialog(null, "hellos t");
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
     }
-    
-    
-    private static void createDirectory(String pathName){
+
+    private static void createDirectory(String pathName) {
         File files = new File(pathName);
-        if(!files.exists()){ //if the file folder does not exist
-            if(files.mkdirs()){ //if you want to create sub folder. you can change mkdir to mkdirs
-                System.out.println("Directory Created in"+files.getAbsolutePath());
+        if (!files.exists()) { //if the file folder does not exist
+            if (files.mkdirs()) { //if you want to create sub folder. you can change mkdir to mkdirs
+                System.out.println("Directory Created in" + files.getAbsolutePath());
+            } else {
+                System.out.println("Problem Occured creating directory");
             }
-            else{
-                System.out.println("Problem Occured creating directory"); 
-            }
-        }
-        else{
-            System.out.println("Directory "+files.getAbsolutePath()+" already exist !");
+        } else {
+            System.out.println("Directory " + files.getAbsolutePath() + " already exist !");
         }
     }
-    
-    
-    public void checkForRegister(){
-          try{
-              
-                    dos.writeUTF("please enter your email!");
-                    dos.flush();
-                    String email = dis.readUTF();
-                    dos.writeUTF("please enter your password!");
-                    dos.flush();
-                    String password = dis.readUTF();
-                    System.out.println(email +" this is password also: "+password);
-                    boolean AlreadyReg = false;
-                    for (int i = 0; i < users.size(); i++) {
-                        if(email.equals(users.get(i).getEmail())){
+
+    public void checkForRegister() {
+        try {
+               
+            dos.writeUTF("please enter your email!");
+            dos.flush();
+            String email = dis.readUTF();
+            System.out.println(email);
+            dos.writeUTF("please enter your password!");
+            dos.flush();
+            
+            String password = dis.readUTF();
+            System.out.println(password);
+            System.out.println(email + " this is password also: " + password);
+            boolean AlreadyReg = false;
+            for (int i = 0; i < users.size(); i++) {
+                if (email.equals(users.get(i).getEmail())) {
 //                            JOptionPane.showMessageDialog(null, "you are already registered!");
-                            dos.writeUTF("true");
-                            dos.flush();
-                            AlreadyReg = true;
-                            break;
-                        }
-                    }
-                    if(AlreadyReg){
-                        this.dispose();
-                           dis.close();       
-                        dos.close();
-                     s.close();
-                        new login().setVisible(true);
-                    }
-                    else{
-                        
-                        try{
-                                user newUser = new user((String)email ,(String) password);
-                                       users.add(newUser);
+                    dos.writeUTF("true");
+                    dos.flush();
+                    AlreadyReg = true;
+                    break;
+                }
+            }
+            if (AlreadyReg) {
+//                this.dispose();
+//                dis.close();
+//                dos.close();
+//                s.close();
+                new login().setVisible(true);
+                this.dispose();
+            } else {
+
+                try {
+                    user newUser = new user((String) email, (String) password);
+                    users.add(newUser);
 //                                       new folder(newUser.getId())
 //                                       createDirectory("home/mostafa/NetBeansProjects/fileserver_distributed_server/"+users.size()+"/home");
-                                       createDirectory("/home/mostafa/NetBeansProjects/fileserver_distributed_server/"+users.size()+"/home");
+                    createDirectory("/home/mostafa/NetBeansProjects/fileserver_distributed_server/" + users.size() + "/home");
 //                                         dis.close();
 //                                         dos.close();
-                                       saveUsersToFile();
+                    saveUsersToFile();
 //                                          dis.close();
 //                                        dos.close();
-                                       // s.close();
-                        }
-                        catch(Exception e){
+                    // s.close();
+                } catch (Exception e) {
 //                            JOptionPane.showMessageDialog(null, e.getMessage());
-                            JOptionPane.showMessageDialog(null, "oops!");
+                    JOptionPane.showMessageDialog(null, "oops!");
 
-                        }
-                    }
-                    
+                }
+            }
+
 //                   dis.close();
 //                                    dos.close();
 //                    s.close();
-                }
-          
-                    
-                    
-//                    new Home().setVisible(true);
-//                    this.dispose();
-                
-                catch(Exception e){
+        } //                    new Home().setVisible(true);
+        //                    this.dispose();
+        catch (Exception e) {
 //                    JOptionPane.showMessageDialog(null, e.getMessage());
-                    JOptionPane.showMessageDialog(null, "oops2!");
+            JOptionPane.showMessageDialog(null, "oops2!");
 
-                }
-              
+        }
+
     }
-    
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -324,8 +286,7 @@ public class Register extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
-            
-        
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
@@ -367,9 +328,8 @@ public class Register extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
 
-                
                 new Register().setVisible(false);
-                
+
 //               
             }
         });

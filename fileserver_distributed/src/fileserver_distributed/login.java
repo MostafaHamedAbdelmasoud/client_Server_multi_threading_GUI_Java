@@ -4,50 +4,51 @@
  * and open the template in the editor.
  */
 package fileserver_distributed;
-
+import fileserver_distributed.Fileserver_distributed;
 
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.io.*;
+import java.net.Socket;
+import java.nio.file.attribute.DosFileAttributes;
 import java.text.*;
 /**
  *
  * @author mostafa
  */
 public class login extends javax.swing.JFrame {
-    ArrayList<user> users;
+       private Socket s = Fileserver_distributed.s;
+    private DataInputStream dis= Fileserver_distributed.dis;
+    private DataOutputStream dos= Fileserver_distributed.dos ;
     /**
      * Creates new form login
      */
     public login() {
-        initComponents();
-        users = new ArrayList<user>();
-        populateArrayList();
-//        JOptionPane.showMessageDialog(null, users.size());
+        try{
+//            s = new Socket("127.0.0.1", 1234);
+//    //            s = new Socket("192.168.43.250", 1234);
+//               dis = new DataInputStream(s.getInputStream());
+//               dos = new DataOutputStream(s.getOutputStream());
+                System.out.println("client Side");
+//                dos.writeUTF("login");
+//                dos.flush();
+            initComponents();
+        }
+         catch(Exception ex){
+            try{
+                JOptionPane.showMessageDialog(null,"some thing happend during connection!");
+
+            }
+            catch(Exception e){
+                JOptionPane.showMessageDialog(null, "some thing happend in client side!");
+            }
+          
+
+        }
+        
     }
     
-    public void populateArrayList(){
-        try {
-            FileInputStream file = new FileInputStream("users.dat");
-            ObjectInputStream inputFile = new ObjectInputStream(file);
-            boolean endOfFile = false;
-            while (!endOfFile) {                
-                try {
-                    users.add((user)inputFile.readObject());
-                } catch (EOFException e) {
-                    endOfFile = true;
-                }
-                catch (Exception f) {
-//                    JOptionPane.showMessageDialog(null, f.getMessage());
-                    JOptionPane.showMessageDialog(null, f.getMessage());
-                }
-            }
-            inputFile.close();
-            
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage());
-        }
-    }
+//    
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -148,32 +149,32 @@ public class login extends javax.swing.JFrame {
              try{
                  
                  
+                 
                  String Email = jTextField2.getText();
                 String Password = jTextField1.getText();
                 
-                for (int i = 0; i < users.size(); i++) {
-//                    System.out.println(users.get(i).getPassword());
-                    if(Email.contentEquals(users.get(i).getEmail())){
-                         if(Password.contentEquals(users.get(i).getPassword()) ){
-                             found = true;
-//                               saveUsersToFile();
-//                             System.err.println("succfuly login");
-                            System.out.println("this id = "+ Integer.toString(users.get(i).getId()+1) );
-                            JOptionPane.showMessageDialog(null, "succefuly login!");
-                            new Home(Integer.toString(users.get(i).getId()+1) ).setVisible(true);
-                            this.dispose();
-                            break;
-                         }
-                        
-                        
-                    }
-            
-                }
-        
-                if(found == false){
-                    JOptionPane.showMessageDialog(null, "You Are Not Registered!, Please Register First");
-                    jTextField1.setText(null);
-                }
+          
+                 dos.writeUTF(Email);
+                 dos.flush();
+                 dos.writeUTF(Password);
+                 dos.flush();
+//                 System.out.println(dis.readUTF());
+                 String retr = dis.readUTF();
+                 if(retr.equals("okToLogin!")){
+                        String Id = dis.readUTF();
+                       System.out.println("this id = "+ Id );
+       //                String login = dis.readUTF();
+       //                JOptionPane.showMessageDialog(null, login);
+
+                       new Home(Id ).setVisible(true);
+                               this.dispose();
+                 }
+                 else{
+                     String hg = dis.readUTF();
+                     JOptionPane.showMessageDialog(null, hg);
+                       this.dispose();
+                       new Register().setVisible(true);
+                 }
 
                  
         }

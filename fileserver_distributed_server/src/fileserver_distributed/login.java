@@ -4,25 +4,49 @@
  * and open the template in the editor.
  */
 package fileserver_distributed;
-
+import fileserver_distributed.Fileserver_distributed;
 
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.text.*;
 /**
  *
  * @author mostafa
  */
 public class login extends javax.swing.JFrame {
-    ArrayList<user> users;
+    private ArrayList<user> users;
+    private ServerSocket sv = Fileserver_distributed.sv;
+    private Socket s = Fileserver_distributed.s;
+    private DataInputStream dis= Fileserver_distributed.dis;
+    private DataOutputStream dos= Fileserver_distributed.dos ;
     /**
      * Creates new form login
      */
     public login() {
-        initComponents();
-        users = new ArrayList<user>();
-        populateArrayList();
+        try{
+        
+//            Fileserver_distributed.sv = new ServerSocket(1234);
+//              s = sv.accept();
+//             dis  = new DataInputStream(s.getInputStream());
+//             dos  = new DataOutputStream(s.getOutputStream());
+             
+             System.out.println("server Side");
+             initComponents();
+             
+            users = new ArrayList<user>();
+            populateArrayList();
+            String Email = dis.readUTF();
+            String Password = dis.readUTF();
+            
+            checkForLogin(Email, Password);
+        }
+        catch(Exception ex){
+            System.out.println("some thing happened during connection with server");
+
+                }
 //        JOptionPane.showMessageDialog(null, users.size());
     }
     
@@ -48,6 +72,55 @@ public class login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
     }
+    
+    
+    public void checkForLogin(String Email , String Password){
+        boolean found = false;
+             try{
+                 
+                for (int i = 0; i < users.size(); i++) {
+//                    System.out.println(users.get(i).getPassword());
+                    if(Email.contentEquals(users.get(i).getEmail())){
+                         if(Password.contentEquals(users.get(i).getPassword()) ){
+                             found = true;
+                              String ID = Integer.toString(users.get(i).getId()+1);
+                            System.out.println("this id = "+ ID );
+                            dos.writeUTF("okToLogin!");
+                            dos.flush();
+                            dos.writeUTF(ID);
+                            dos.flush();
+//                            dos.writeUTF("succefuly login!");
+//                            dos.flush();
+//                            JOptionPane.showMessageDialog(null, "succefuly login!");
+                             System.out.println("succefuly login!");
+                            
+                            
+                            new Home(Integer.toString(users.get(i).getId()+1) );
+                            this.dispose();
+                            break;
+                         }
+                        
+                        
+                    }
+            
+                }
+        
+                if(found == false){
+                    dos.writeUTF("noToLogin!");
+                    dos.flush();
+                    dos.writeUTF("You Are Not Registered!, Please Register First");
+                    dos.flush();
+                    JOptionPane.showMessageDialog(null, "You Are Not Registered!, Please Register First");
+                    jTextField1.setText(null);
+                }
+
+                 
+        }
+             catch (Exception f){
+                 JOptionPane.showMessageDialog(null, f.getMessage());
+             }
+    }
+    
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -140,49 +213,7 @@ public class login extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-         if(jTextField2.getText().isEmpty() || jTextField1.getText().isEmpty()){
-             JOptionPane.showMessageDialog(null, "please enter all fields");
-        }
-         else{
-             boolean found = false;
-             try{
-                 
-                 
-                 String Email = jTextField2.getText();
-                String Password = jTextField1.getText();
-                
-                for (int i = 0; i < users.size(); i++) {
-//                    System.out.println(users.get(i).getPassword());
-                    if(Email.contentEquals(users.get(i).getEmail())){
-                         if(Password.contentEquals(users.get(i).getPassword()) ){
-                             found = true;
-//                               saveUsersToFile();
-//                             System.err.println("succfuly login");
-                            System.out.println("this id = "+ Integer.toString(users.get(i).getId()+1) );
-                            JOptionPane.showMessageDialog(null, "succefuly login!");
-                            new Home(Integer.toString(users.get(i).getId()+1) ).setVisible(true);
-                            this.dispose();
-                            break;
-                         }
-                        
-                        
-                    }
-            
-                }
         
-                if(found == false){
-                    JOptionPane.showMessageDialog(null, "You Are Not Registered!, Please Register First");
-                    jTextField1.setText(null);
-                }
-
-                 
-        }
-             catch (Exception f){
-                 JOptionPane.showMessageDialog(null, f.getMessage());
-             }
-             
-             
-         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -215,7 +246,7 @@ public class login extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new login().setVisible(true);
+                new login();
             }
         });
     }

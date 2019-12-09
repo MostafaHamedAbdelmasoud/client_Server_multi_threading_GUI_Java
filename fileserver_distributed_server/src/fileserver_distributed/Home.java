@@ -4,7 +4,8 @@
  * and open the template in the editor.
  */
 package fileserver_distributed;
-import fileserver_distributed.CustomFileVisitor;
+import fileserver_distributed.Fileserver_distributed;
+import java.awt.HeadlessException;
 //package CustomFileVisitor;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
@@ -40,11 +41,11 @@ public class Home extends javax.swing.JFrame {
     private String cdAhlam;
     private ArrayList<String> cdLists;
     private String pathForOperation , ContinuedPathForOperation;
-    private Socket s;
-    private DataInputStream dis;
-    private DataOutputStream dos;
+    private ServerSocket sv = Fileserver_distributed.sv;
+    private Socket s = Fileserver_distributed.s;
+    private DataInputStream dis= Fileserver_distributed.dis;
+    private DataOutputStream dos= Fileserver_distributed.dos ;
     private String srvr_msg;
-    private ServerSocket sv;
 
     
     
@@ -137,20 +138,16 @@ public class Home extends javax.swing.JFrame {
         try
         {
             
-            sv = new ServerSocket(1234);
-             
-             s = sv.accept();
-           dis  = new DataInputStream(s.getInputStream());
-             dos  = new DataOutputStream(s.getOutputStream());
+            
             initComponents();
                 setSize(750,505);
                setLocation(100,100);
                setResizable(false);
               this.PathNow = path;
               this.allPaths = "";
-                System.out.println("this is fuckin home!");
+                System.out.println("this is  home!");
        //          JOptionPane.showMessageDialog(null,getCwd()+"/"+path+"/home");
-                 JOptionPane.showMessageDialog(null,getCwd());
+//                 JOptionPane.showMessageDialog(null,getCwd());
                  this.cdAhlam= getCwd();
        //          JOptionPane.showMessageDialog(null,getPathNow());
                  String [] collapeCommands = {"cd","mkdir","ls","rmdir","pwd","cp","rnm","rm","mv"};
@@ -317,12 +314,8 @@ public class Home extends javax.swing.JFrame {
                         }
                
                
-               
-               
-               
-               
                else{
-                   System.out.println("jdj");
+                   System.out.println("not defined command!");
                }
                 trimPaths(PathNow);
                 dos.writeUTF(ContinuedPathForOperation);
@@ -338,33 +331,34 @@ public class Home extends javax.swing.JFrame {
         }
         
     }
-    
-    private static void createDirectory(String pathName){
+//     Home H = new Home();
+    private  void createDirectory(String pathName){
         File files = new File(pathName);
         if(!files.exists()){ //if the file folder does not exist
             if(files.mkdirs()){ //if you want to create sub folder. you can change mkdir to mkdirs
-//                System.out.println("Directory Created in"+files.getAbsolutePath());
-                JOptionPane.showMessageDialog(null,"Directory Created in"+files.getAbsolutePath());
-//                Home a = new Home();
-                    
-//                JOptionPane.showMessageDialog(null,"Directory Created in "+);
+               try{
+                dos.writeUTF("Directory Created in"+ContinuedPathForOperation+"");
+                dos.flush();
+               }
+               catch (IOException ex){
+                  JOptionPane.showMessageDialog(null,ex.getMessage());
 
+               }
+//                JOptionPane.showMessageDialog(null,"Directory Created in"+ContinuedPathForOperation);
+
+                
             }
             else{
-//                System.out.println("Problem Occured During Creating Directory, check space or if it exists already!"); 
                  JOptionPane.showMessageDialog(null,"Problem Occured During Creating Directory, check space or if it exists already!");
             }
         }
         else{
-//            System.out.println("Directory "+files.getAbsolutePath()+" already exist !");
             JOptionPane.showMessageDialog(null,"Directory "+files.getAbsolutePath()+" already exist !");
 
         }
     }
     
      public String getPathNowInsideList(String PathNowUpdated) {
-        
-//        String path= getCwd()+"/"+this.PathNow+"/home";
         String path= getCwdUpdated(PathNowUpdated);
         try{
              System.out.println(path);
@@ -380,23 +374,16 @@ public class Home extends javax.swing.JFrame {
        return this.PublicPathNow;
    }
    
-//    public String  
     public String addPAth(String pathTyped) {
-//        return "/"+getPathNow()+"/"+this.allPaths+'/'+pathTyped;
         this.allPaths += pathTyped;
-//        this.allPaths += "/";
-//        return "/"+getPathNow();
         return getPathNow()+"/"+pathTyped;
         
     }
     public String deletePathNow(String name) {
-//        return getPathNow()+"/"+this.PathNow+"/home/"+name;
         
         return getPathNow()+"/"+name;
     }
     public String getCwd() {
-//        File file = new File("");
-//        File file = new File("home/mostafa/NetBeansProjects/fileserver_distributed_server/"+this.PathNow+"/home/");
         File file = new File("/home/mostafa/NetBeansProjects/fileserver_distributed_server/"+this.PathNow+"/home/");
         String path = file.getAbsolutePath();
            this.PublicPathNow= path;
@@ -462,37 +449,12 @@ public class Home extends javax.swing.JFrame {
                  }
                 if(firstFolderFounded){
                     boolean secondFolderFounded = false;
-//                    if(ArrayLst.get(1).charAt(ArrayLst.get(1).length()-1)  == '/' || ArrayLst.get(1).charAt(0) == '/'  ){
-//                        isPath = true;
-//                        String hs = "";
-//                        String hhg = ArrayLst.get(1);
-//                        String ls ="";
-//                        if(ArrayLst.get(1).charAt(ArrayLst.get(1).length()-1)  == '/'){
-//                            hs += hhg.substring(0,hhg.length()-1);
-//                        }
-//                        if(ArrayLst.get(1).charAt(0)  == '/'){
-//                            ls += hs.substring(1,hs.length());
-//                        }
-//                        for (int i = 0; i < Dirs.length; i++) {
-//                            if(ArrayLst.get(1).equals(Dirs[i])){
-//                                isDirect = true;
-//                                System.out.println("kjvnvjkndjn");
-//                            }
-//                        }
-//                        if(!isDirect){
-//                            JOptionPane.showMessageDialog(null,"this path is not exist!");
-//                              return false;
-//                        }
-//                    }
-//                    else{
                         for (int j = 0; j < Filess.length; j++) {
                             if(ArrayLst.get(1).equals(Filess[j])){
                                 secondFolderFounded = true;
 
                             }
                         }
-                    
-//                   }
                     
                     
                     if (secondFolderFounded == true) {
@@ -502,14 +464,6 @@ public class Home extends javax.swing.JFrame {
                     
                     
                     if(operationType.equals("cp")){
-//                         Path sourceLocation= Paths.get(cdAhlam+"/"+ArrayLst.get(0).concat(""));
-//                         
-//                        Path targetLocation =Paths.get(cdAhlam+"/"+ArrayLst.get(1).concat(""));
-//                        Files.copy(sourceLocation, targetLocation);
-
-//                        CustomFileVisitor fileVisitor = new CustomFileVisitor(sourceLocation, targetLocation);
-//                        Files.copy(sourceLocation, fileVisitor);
-
                           String kkf = ArrayLst.get(1);
                           String lol=kkf;
                           String finalString = ArrayLst.get(1);
@@ -528,16 +482,12 @@ public class Home extends javax.swing.JFrame {
                             
                        System.out.println(cdAhlam+"/"+finalString);
 
-                            
-                            //hello.txt lknd/ 
                         try{
                             File sourse = new File(cdAhlam+"/"+ArrayLst.get(0).concat(""));
                             File target;
                             
                             if(isDirect){
-//                                 target = new File(cdAhlam+"/"+finalString+ArrayLst.get(0).concat(""));
                                  target = new File(this.pathForOperation+"/"+finalString+ArrayLst.get(0).concat(""));
-//                                 target = new File("/"+finalString+ArrayLst.get(0).concat(""));
                         }
                             else
                                  target = new File(cdAhlam+"/"+ArrayLst.get(1).concat(""));
@@ -556,8 +506,7 @@ public class Home extends javax.swing.JFrame {
                  if(operationType.equals("rnm")) {
                         Path sourceLocation= Paths.get(cdAhlam+"/"+ArrayLst.get(0).concat(""));
                         Path targetLocation =Paths.get(cdAhlam+"/"+ArrayLst.get(1).concat(""));
-//                            JOptionPane.showMessageDialog(null,"well, it's a file");
-                        
+
                         CustomFileVisitor fileVisitor = new CustomFileVisitor(sourceLocation, targetLocation);
                         Files.walkFileTree(sourceLocation, fileVisitor);
 
@@ -592,10 +541,8 @@ public class Home extends javax.swing.JFrame {
                             File target;
                             
                             if(isDirect){
-//                                 target = new File(cdAhlam+"/"+finalString+ArrayLst.get(0).concat(""));
                                  target = new File(this.pathForOperation+"/"+finalString+ArrayLst.get(0).concat(""));
                                    System.out.println(this.pathForOperation+"/"+finalString+ArrayLst.get(0).concat(""));
-//                                  target = new File("/"+finalString+ArrayLst.get(0).concat(""));
                             } else
                                  target = new File(cdAhlam+"/"+ArrayLst.get(1).concat(""));
                             
@@ -612,8 +559,6 @@ public class Home extends javax.swing.JFrame {
                  }
                     
                      
-//                     createDirectory(addPAth(ArrayLst.get(1)).concat(""));
-                     
                      return true;
                 }
                 
@@ -626,7 +571,7 @@ public class Home extends javax.swing.JFrame {
              
         
         }
-        catch(Exception e){
+        catch(HeadlessException | IOException e){
              JOptionPane.showMessageDialog(null,e.getMessage());
         }
          
@@ -944,173 +889,7 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-//        String TypedName2 = jTextField1.getText().trim();
-        try{
-             String commandName = jComboBox1.getSelectedItem().toString();
-            if(commandName.equals("mkdir")){
-                String TypedName = jTextField2.getText();
-                
-                    if(TypedName.trim().isEmpty()){
-                       JOptionPane.showMessageDialog(null, "please enter all fields");
-                   }
-                    else{
 
-                         createDirectory(addPAth(TypedName).concat(""));
-
-                    }
-                  listDirectories(false);
-            }
-            else if(commandName.equals("ls")){
-                    jTextField2.setText("");
-                    System.out.println(getPathNow());
-                   listDirectories(false);
-            }
-            else if(commandName.equals("rmdir")){
-                String removedDir = jTextField2.getText();
-//                listDirectories(true);
-                 if(removedDir.trim().isEmpty()){
-                       JOptionPane.showMessageDialog(null, "please enter all fields");
-                   }
-                    else{
-
-                         OkToRemove(removedDir,true);
-
-                    }
-                listDirectories(false);
-            }
-            else if(commandName.equals("cd")){
-                String PathTyped = jTextField2.getText();
-//                listDirectories(true);
-//            JOptionPane.showMessageDialog(null, "note: make sure to put '/' with "+commandName +" in the end of your input!");
-                 if(PathTyped.trim().isEmpty()){
-                       JOptionPane.showMessageDialog(null, "please enter all fields");
-                   }
-                    else{
-                     separateInputsFromUser(PathTyped,true,"none");
-//                         OkToRemove(removedDir);
-
-                    }
-                
-            }
-            else if(commandName.equals("pwd")){
-//                String PathTyped = jTextField2.getText();
-//                listDirectories(true);
-//                 if(! PathTyped.trim().isEmpty()){
-//                       JOptionPane.showMessageDialog(null, "please enter all fields");
-//                   }
-                    try{
-//                                jTextArea1.setText(cdAhlam);
-                                jTextArea1.setText(this.ContinuedPathForOperation);
-                    }
-                    catch(Exception e){
-                        JOptionPane.showMessageDialog(null, e.getMessage());
-                    }
-                
-            }
-            else if(commandName.equals("cp")){
-                String folderTyped = jTextField2.getText();
-                listDirectories(true);
-                 if(folderTyped.trim().isEmpty()){
-                       JOptionPane.showMessageDialog(null, "please enter all fields");
-                   }
-                    try{
-                       String ho =  separateInputsFromUser(folderTyped,false,"cp");
-                       if(ho.equals("failed")){
-                           JOptionPane.showMessageDialog(null, "try again");
-                       }
-                       else{
-                            
-                           JOptionPane.showMessageDialog(null, "successful operation.");
-//                                jTextArea1.setText(cdAhlam);
-                       }
-                    }
-                    catch(Exception e){
-                        JOptionPane.showMessageDialog(null, e.getMessage());
-                    }
-                
-            }
-            
-            
-            else if(commandName.equals("rnm")){
-                String folderTyped = jTextField2.getText();
-                listDirectories(true);
-                 if(folderTyped.trim().isEmpty()){
-                       JOptionPane.showMessageDialog(null, "please enter all fields");
-                   }
-                    try{
-                       String ho =  separateInputsFromUser(folderTyped,false,"rnm");
-                       if(ho.equals("failed")){
-                           JOptionPane.showMessageDialog(null, "try again");
-                       }
-                       else{
-                            
-                           JOptionPane.showMessageDialog(null, "successful operation.");
-//                                jTextArea1.setText(cdAhlam);
-                       }
-                    }
-                    catch(Exception e){
-                        JOptionPane.showMessageDialog(null, e.getMessage());
-                    }
-                
-            }
-            
-            else if(commandName.equals("rm")){
-                String folderTyped = jTextField2.getText();
-                listDirectories(true);
-                 if(folderTyped.trim().isEmpty()){
-                       JOptionPane.showMessageDialog(null, "please enter all fields");
-                   }
-                    try{
-                       boolean ho =  OkToRemove(folderTyped,false);
-                       if(!ho){
-                           JOptionPane.showMessageDialog(null, "file name is not exist!");
-                       }
-                       else{
-                           JOptionPane.showMessageDialog(null, "successful operation.");
-//                                jTextArea1.setText(cdAhlam);
-                       }
-                    }
-                    catch(Exception e){
-                        JOptionPane.showMessageDialog(null, e.getMessage());
-                    }
-                
-            }
-            
-             else if(commandName.equals("mv")){
-                String folderTyped = jTextField2.getText();
-                listDirectories(true);
-                 if(folderTyped.trim().isEmpty()){
-                       JOptionPane.showMessageDialog(null, "please enter all fields");
-                   }
-                    try{
-                       String ho =  separateInputsFromUser(folderTyped,false,"mv");
-                       if(ho.equals("failed")){
-                           JOptionPane.showMessageDialog(null, "try again");
-                       }
-                       else{
-                            
-                           JOptionPane.showMessageDialog(null, "successful operation.");
-//                                jTextArea1.setText(cdAhlam);
-                       }
-                    }
-                    catch(Exception e){
-                        JOptionPane.showMessageDialog(null, e.getMessage());
-                    }
-                
-            }
-                     
-            
-          
-//            trimPaths(PathNow);
-//            dos.writeUTF(ContinuedPathForOperation);
-//            dos.flush();
-//         jTextArea3.setText(ContinuedPathForOperation);
-        }
-       catch(Exception e){
-//           System.out.println(getPathNow());
-//           JOptionPane.showMessageDialog(null, e.getMessage());
-           JOptionPane.showMessageDialog(null, e.getMessage());
-       }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
