@@ -345,8 +345,8 @@ public class Home extends javax.swing.JFrame {
 //                                     os.flush(); 
 //                                     fis.close();
 //                                     os.close();
-                                this.dispose();
-                                    new Home(this.PathNow).setVisible(false);
+//                                this.dispose();
+//                                    new Home(this.PathNow).setVisible(false);
 //                                    this.dispose();
                                     }
                                 }

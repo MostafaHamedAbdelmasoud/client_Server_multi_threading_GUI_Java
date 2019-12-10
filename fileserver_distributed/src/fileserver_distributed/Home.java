@@ -510,8 +510,8 @@ public class Home extends javax.swing.JFrame {
                             JOptionPane.showMessageDialog(null, "successfuly downloaded!");
 //                            is.close();
 //                            fr.close();
-                            this.dispose();
-                            new Home(this.PathNow).setVisible(true);
+//                            this.dispose();
+//                            new Home(this.PathNow).setVisible(true);
 //                        new Home(this.PathNow).setVisible(true);
                         }
                         else{
