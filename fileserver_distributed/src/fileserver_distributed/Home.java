@@ -62,7 +62,7 @@ public class Home extends javax.swing.JFrame {
     
     public Home(String path) {
 //        initComponents();
-      
+//      initComponents();
         try{
             this.PathNow = path;
            initComponents();
@@ -373,7 +373,7 @@ public class Home extends javax.swing.JFrame {
 //                       String ho =  separateInputsFromUser(folderTyped,false,"cp");
                         String common = dis.readUTF();
                        if(common.equals("failed")){
-                           JOptionPane.showMessageDialog(null, "check path/name ,try again");
+                           JOptionPane.showMessageDialog(null, "check path or name ,try again");
                        }
                        else{
                             
@@ -466,31 +466,63 @@ public class Home extends javax.swing.JFrame {
                 
             }
              
-             else if(commandName.equals("downlaod")){
+             else if(commandName.equals("download")){
                 String folderTyped = jTextField2.getText();
 //                listDirectories(true);
                  if(folderTyped.trim().isEmpty()){
                        JOptionPane.showMessageDialog(null, "please enter all fields");
                    }
+                 String sp = "",prefix="";
+                 int indx = 0;
+                    for (int i = 0; i < folderTyped.length(); i++) {
+                            if(folderTyped.charAt(i) == '.' && (indx <1) ){
+                                prefix = sp;
+                                indx=1;
+                                sp="";
+                            }
+                            sp += folderTyped.charAt(i);
+                        }
+                    String postfix = sp;
                     try{
                          dos.writeUTF("download");
                         dos.flush();
-                        
+//                        DateFormat df = new SimpleDateFormat("HH:mm:ss");
+                        long df = System.currentTimeMillis();
                         dos.writeUTF(folderTyped);
                         dos.flush();
-//                        acceptDownload();
-                        String common = dis.readUTF();
-                       if(common.equals("notFound")){
-                           JOptionPane.showMessageDialog(null, "file name is not exist!");
-                       }
-                       else if(common.equals("successed")){
-                           JOptionPane.showMessageDialog(null, "successful operation.");
-                       }
-                       else{
-                           JOptionPane.showMessageDialog(null, "failed to download");
-                       }
+                        String ho = dis.readUTF();
+                        File file = new File("");
+                        System.out.println(file.getAbsoluteFile());
+                         int max = 10; 
+                    int min = 1; 
+                    int range = max - min + 1; 
+                        if(ho.equals("Found"))
+                        {
+                            byte [] b=new byte[5000];
+                            InputStream is = s.getInputStream();
+//                            dis.read(b,0,b.length);
+//                            File file = new File("");
+                          System.out.println(df);
+                            FileOutputStream fr = new FileOutputStream(file.getAbsolutePath()+"/"+prefix+(int)(Math.random() * range) + min+"_"+df+postfix);
+                            is.read(b,0,b.length);
+                            fr.write(b,0,b.length);
+//                            fr.flush();
+                            JOptionPane.showMessageDialog(null, "successfuly downloaded!");
+//                            is.close();
+//                            fr.close();
+                            this.dispose();
+                            new Home(this.PathNow).setVisible(true);
+//                        new Home(this.PathNow).setVisible(true);
+                        }
+                        else{
+                            JOptionPane.showMessageDialog(null, "file name not found!");
+
+                        }
+                        
+                        
                     }
                     catch(Exception e){
+//                        JOptionPane.showMessageDialog(null, e.getMessage());
                         JOptionPane.showMessageDialog(null, e.getMessage());
                     }
                 
@@ -556,7 +588,7 @@ public class Home extends javax.swing.JFrame {
                         out.writeObject(data);
                         out.flush();
         //                txt.append("send 1 file ../n");
-                        
+                          
                     }
 //                    out.close();
 //                    in.close(); 

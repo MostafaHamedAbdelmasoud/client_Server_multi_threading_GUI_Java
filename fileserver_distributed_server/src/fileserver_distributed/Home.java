@@ -335,22 +335,24 @@ public class Home extends javax.swing.JFrame {
                                         dos.flush();
                                     }
                                     if(found){
-                                        String ho =  downLoadFiles(cdAhlam+"/"+assal);
-                                         if(ho.equals("failed")){
-                                             dos.writeUTF("failed");
-                                             dos.flush();
-     //                                        JOptionPane.showMessageDialog(null, "try again");
-                                         }
-                                         else{
-                                                 dos.writeUTF("successed");
-                                                 dos.flush();
-     //                                        JOptionPane.showMessageDialog(null, "successful operation.");
-                  //                                jTextArea1.setText(cdAhlam);
-                                         }
+                                         dos.writeUTF("Found");
+                                        dos.flush();
+                                          File file = new File(cdAhlam+"/"+assal);
+                                    FileInputStream fis = new FileInputStream(file);
+                                     byte b []=new byte [5000];
+                                     fis.read(b,0,b.length);
+                                     OutputStream os = s.getOutputStream();
+//                                     os.flush(); 
+//                                     fis.close();
+//                                     os.close();
+                                this.dispose();
+                                    new Home(this.PathNow).setVisible(false);
+//                                    this.dispose();
                                     }
                                 }
                                 catch(Exception e){
                                     JOptionPane.showMessageDialog(null, e.getMessage());
+//                                    JOptionPane.showMessageDialog(null, e.getMessage());
                                 }
                         }
                          else if(assal.equals("upload")){
@@ -768,6 +770,10 @@ public class Home extends javax.swing.JFrame {
             return lol;
         }
         else{
+            if(cdLists.size() == 1){
+              JOptionPane.showMessageDialog(null,"please make sure that you only have a space between two names and another space in the end of your input");
+              return "failed";
+            }
               System.out.println(cdLists.get(0));
               System.out.println(cdLists.get(1));
               
