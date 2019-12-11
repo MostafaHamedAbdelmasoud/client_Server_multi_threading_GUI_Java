@@ -7,6 +7,7 @@ package fileserver_distributed;
 import fileserver_distributed.Fileserver_distributed;
 import fileserver_distributed.Data;
 import fileserver_distributed.filterImages;
+import java.awt.Frame;
 import java.awt.image.ImageFilter;
 
 //package CustomFileVisitor;
@@ -26,12 +27,19 @@ import java.util.*;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
+import javax.swing.ActionMap;
 import javax.swing.JFileChooser;
 
 
 import javax.swing.filechooser.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
    
 
+
+
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 
 
@@ -113,7 +121,7 @@ public class Home extends javax.swing.JFrame {
 //    //Read more: http://mrbool.com/file-transfer-between-2-computers-with-java/24516#ixzz67cpqJzdX
 //    }
 //    
-    private ObjectOutputStream out;
+   
     public void acceptDownload(String FileUploaded){
         try {
             
@@ -166,6 +174,11 @@ public class Home extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(231, 231, 232));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
         getContentPane().setLayout(null);
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -483,6 +496,11 @@ public class Home extends javax.swing.JFrame {
                             sp += folderTyped.charAt(i);
                         }
                     String postfix = sp;
+//                    File file = new File("");
+                     FileOutputStream fr =null;
+                     InputStream is =  null;
+//                     FileOutputStream fr= new FileOutputStream(file.getAbsolutePath()+"/"+"");
+
                     try{
                          dos.writeUTF("download");
                         dos.flush();
@@ -491,28 +509,44 @@ public class Home extends javax.swing.JFrame {
                         dos.writeUTF(folderTyped);
                         dos.flush();
                         String ho = dis.readUTF();
-                        File file = new File("");
+                         File file = new File("");
                         System.out.println(file.getAbsoluteFile());
                          int max = 10; 
                     int min = 1; 
                     int range = max - min + 1; 
                         if(ho.equals("Found"))
                         {
+                            try{
                             byte [] b=new byte[5000];
-                            InputStream is = s.getInputStream();
+                             is = s.getInputStream();
 //                            dis.read(b,0,b.length);
 //                            File file = new File("");
                           System.out.println(df);
-                            FileOutputStream fr = new FileOutputStream(file.getAbsolutePath()+"/"+prefix+(int)(Math.random() * range) + min+"_"+df+postfix);
+                             fr = new FileOutputStream(file.getAbsolutePath()+"/"+prefix+(int)(Math.random() * range) + min+"_"+df+postfix);
                             is.read(b,0,b.length);
                             fr.write(b,0,b.length);
 //                            fr.flush();
-                            JOptionPane.showMessageDialog(null, "successfuly downloaded!");
-//                            is.close();
+
+                            fr.flush();
 //                            fr.close();
-//                            this.dispose();
-//                            new Home(this.PathNow).setVisible(true);
-//                        new Home(this.PathNow).setVisible(true);
+                            JOptionPane.showMessageDialog(null, "successfuly downloaded!");
+//                             if (fr != null) fr.close();
+                            }
+                            catch(IOException ex){
+//                              JOptionPane.showMessageDialog(null, ex.getMessage());
+                              JOptionPane.showMessageDialog(null, "kdkd");
+
+                            }
+                            finally {
+                                try { if (is == null) is.close(); } catch(IOException e){
+
+                                }
+                                try { if (is == null) fr.close(); } catch(IOException e){
+                                        
+                                 }
+                            
+                            }
+                                  
                         }
                         else{
                             JOptionPane.showMessageDialog(null, "file name not found!");
@@ -523,7 +557,7 @@ public class Home extends javax.swing.JFrame {
                     }
                     catch(Exception e){
 //                        JOptionPane.showMessageDialog(null, e.getMessage());
-                        JOptionPane.showMessageDialog(null, e.getMessage());
+                        JOptionPane.showMessageDialog(null, "lfl");
                     }
                 
             }
@@ -543,16 +577,29 @@ public class Home extends javax.swing.JFrame {
            JOptionPane.showMessageDialog(null, e.getMessage());
        }
     }//GEN-LAST:event_jButton1ActionPerformed
-
+       final JFrame frame = new JFrame();
+       
+//    frame.addWindowListener(new WindowAdapter() {
+//
+////            public void windowClosing(WindowEvent evt) {
+////                            int res=JOptionPane.showConfirmDialog(null,
+////                                    "Do you want to exit.?");
+////                            if(res==JOptionPane.YES_OPTION){
+////                                    Cal.this.dispose();
+////                            }
+////            }                               
+//        });
+     private ObjectOutputStream out;
+    
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
 //        while(true){
-        String folderTyped = jTextField2.getText();
+//        String folderTyped = jTextField2.getText();
 //                listDirectories(true);
      
-           if(folderTyped.trim().isEmpty()){
-               JOptionPane.showMessageDialog(null, "please enter a name for youe uploades first");
-          }
-           else{
+//           if(folderTyped.trim().isEmpty()){
+//               JOptionPane.showMessageDialog(null, "please enter a name for youe uploades first");
+//          }
+//           else{
         
                 try {
                     dos.writeUTF("upload");
@@ -562,6 +609,9 @@ public class Home extends javax.swing.JFrame {
         //            out.writeObject("mostafa");
         //            out.flush();
                     JFileChooser ch = new JFileChooser();
+//                    ActionMap am = ch.getActionMap();  
+//                    Action key = am.get("WHATEVER_THEACTIONAME_FOR_OPEN-DIR._IS");
+//                    key.setEnabled(false);
                     String stst = jComboBox2.getSelectedItem().toString();
                     
                     if(stst.equals("Image")){
@@ -571,6 +621,8 @@ public class Home extends javax.swing.JFrame {
                    
                     int c = ch.showOpenDialog(this);
                     if (c == JFileChooser.APPROVE_OPTION) {
+//                        dos.writeUTF("choose");
+//                        dos.flush();
                         File f = ch.getSelectedFile();
                          in = new FileInputStream(f);
                         byte b[] = new byte[in.available()];
@@ -579,26 +631,32 @@ public class Home extends javax.swing.JFrame {
                         data.setStatus(jComboBox2.getSelectedItem().toString());
                         
                         
-                        data.setName(folderTyped);
+                        data.setName(f.getName());
                         data.setFile(b);
                         System.out.println(data.getFile());
-//                        this.dispose();
-                    ch.setVisible(false);
-//                 new Home(this.PathNow).setVisible(true);
                         out.writeObject(data);
                         out.flush();
-        //                txt.append("send 1 file ../n");
                           
                     }
-//                    out.close();
-//                    in.close(); 
-//out.close();
-//                this.dispose();
-//                ch.setVisible(false);
-//                 new Home(this.PathNow).setVisible(true);
+                   if (c == JFileChooser.CANCEL_OPTION) {
+                       try{
+//                        dos.writeUTF("notChoose");
+//                        dos.flush();
+                        JOptionPane.showMessageDialog(null, "Cancel Option Chosen, Closing Now");
+                       }
+                       catch(Exception cf){
+                            JOptionPane.showMessageDialog(null, "error not chose!");
+
+                       }
+                        
+                   }
+                   if (c == JFileChooser.ERROR_OPTION) {
+                        JOptionPane.showMessageDialog(null, "there is error");
+                        
+                   }
                     jTextField2.setText("");
         //            trimPaths(PathNow);
-        ch.setVisible(false);
+//        ch.setVisible(false);
                     String pathTrimed = dis.readUTF();
                        
                  jTextArea3.setText(pathTrimed);
@@ -606,13 +664,31 @@ public class Home extends javax.swing.JFrame {
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(this, e, "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                 }
+//                 }
 //           }
     }//GEN-LAST:event_jButton3ActionPerformed
    
     private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox2ActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        if (JOptionPane.showConfirmDialog(frame,"Are you sure you want to close this window?", "Close Window?", 
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+            try{
+                dis.close();
+                dos.close();
+                s.close();
+                System.exit(0);
+            }
+            catch(Exception ex){
+                JOptionPane.showMessageDialog(null, "now it is closed");
+            }
+            
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
@@ -647,6 +723,20 @@ public class Home extends javax.swing.JFrame {
                 new Home(PathNow).setVisible(true);
             }
         });
+//        final JFrame frame = this;
+//        frame.addWindowListener(new WindowAdapter() {
+//            public void windowClosing(WindowEvent ev) {
+//                //frame.dispose();
+//                int confirm = JOptionPane.showOptionDialog(frame,
+//                    "Are You Sure to Close this Application?",
+//                    "Exit Confirmation", JOptionPane.YES_NO_OPTION,
+//                    JOptionPane.QUESTION_MESSAGE, null, null, null);
+//            if (confirm == JOptionPane.YES_OPTION) {
+//                System.exit(1);
+//            }
+//            }
+//        });
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

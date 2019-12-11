@@ -19,20 +19,22 @@ import java.text.*;
 public class login extends javax.swing.JFrame {
     private ArrayList<user> users;
     private ServerSocket sv = Fileserver_distributed.sv;
-    private Socket s = Fileserver_distributed.s;
-    private DataInputStream dis= Fileserver_distributed.dis;
-    private DataOutputStream dos= Fileserver_distributed.dos ;
+    private static Socket s;
+    private static DataInputStream dis;
+    private static DataOutputStream dos ;
     /**
      * Creates new form login
      */
-    public login() {
+    public login(Socket s, DataInputStream dis,DataOutputStream dos) {
         try{
         
 //            Fileserver_distributed.sv = new ServerSocket(1234);
 //              s = sv.accept();
 //             dis  = new DataInputStream(s.getInputStream());
 //             dos  = new DataOutputStream(s.getOutputStream());
-             
+             this.dis = dis;
+             this.dos=dos;
+             this.s=s;
              System.out.println("server Side");
              initComponents();
              
@@ -95,7 +97,7 @@ public class login extends javax.swing.JFrame {
                              System.out.println("succefuly login!");
                             
                             
-                            new Home(Integer.toString(users.get(i).getId()+1) );
+                            new Home(Integer.toString(users.get(i).getId()+1), s,dis,dos );
                             this.dispose();
                             break;
                          }
@@ -246,7 +248,7 @@ public class login extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new login();
+                new login(s,dis,dos);
             }
         });
     }

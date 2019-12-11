@@ -135,10 +135,10 @@ public  class menu extends javax.swing.JFrame {
             
                 System.out.println("it is close on menu login");
                 new login().setVisible(true);
+                this.dispose();
             } catch (Exception s) {
-                JOptionPane.showMessageDialog(null, "refused to close!");
+                JOptionPane.showMessageDialog(null, s.getMessage());
             }
-
             
         
 
@@ -159,9 +159,11 @@ public  class menu extends javax.swing.JFrame {
             
                 System.out.println("it is close on menu register");
                 new Register().setVisible(true);
+                this.dispose();
             } catch (Exception s) {
-                JOptionPane.showMessageDialog(null, "refused to close!");
+                 JOptionPane.showMessageDialog(null, s.getMessage());
             }
+         
 
 
     }//GEN-LAST:event_jMenuItem3ActionPerformed

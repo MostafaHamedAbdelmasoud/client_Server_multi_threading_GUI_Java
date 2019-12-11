@@ -12,6 +12,7 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.file.attribute.DosFileAttributes;
 import java.text.*;
+import javax.swing.JFrame;
 /**
  *
  * @author mostafa
@@ -68,6 +69,11 @@ public class login extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setAlwaysOnTop(true);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         jLabel1.setText("login");
@@ -186,6 +192,24 @@ public class login extends javax.swing.JFrame {
              
          }
     }//GEN-LAST:event_jButton1ActionPerformed
+final JFrame frame = new JFrame();
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+            if (JOptionPane.showConfirmDialog(frame,"Are you sure you want to close this window?", "Close Window?", 
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+            try{
+                dis.close();
+                dos.close();
+                s.close();
+                System.exit(0);
+            }
+            catch(Exception ex){
+                JOptionPane.showMessageDialog(null, "now it is closed");
+            }
+            
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments

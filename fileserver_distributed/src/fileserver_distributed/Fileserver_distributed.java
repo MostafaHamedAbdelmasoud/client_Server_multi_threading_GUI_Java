@@ -6,6 +6,7 @@
 package fileserver_distributed;
 import java.io.*;
 import java.net.Socket;
+import javax.swing.JOptionPane;
 /**
  *
  * @author mostafa
@@ -25,11 +26,13 @@ public class Fileserver_distributed  {
              dis  = new DataInputStream(s.getInputStream());
              dos  = new DataOutputStream(s.getOutputStream());
             new menu().setVisible(true);
+            
         }
          catch(IOException ex){
+             
             System.out.println("some thing happened during connection with server");
 
-                }
+        }
     }
     
 }

@@ -26,17 +26,20 @@ public class Register extends javax.swing.JFrame {
 
     ArrayList<user> users;
    private ServerSocket sv = Fileserver_distributed.sv;
-    private Socket s = Fileserver_distributed.s;
-    private DataInputStream dis= Fileserver_distributed.dis;
-    private DataOutputStream dos= Fileserver_distributed.dos ;
+    private static Socket s;
+    private static DataInputStream dis;
+    private static DataOutputStream dos ;
 
     /**
      * Creates new form Register
      */
-    public Register() {
+    public Register(Socket s,DataInputStream dis,DataOutputStream dos) {
         System.out.println("server Side");
 
         try {
+            this.s=s;
+            this.dis=dis;
+            this.dos=dos;
             initComponents();
             users = new ArrayList<user>();
             populateArrayList();
@@ -96,7 +99,7 @@ public class Register extends javax.swing.JFrame {
             System.out.println("ready to close");
 //            System.out.println(dis.read());
             
-            new Home(Integer.toString(users.size()));
+            new Home(Integer.toString(users.size()) , s,dis,dos);
 //            new Home(Integer.toString(users.size())).setVisible(true);
 
             this.dispose();
@@ -151,7 +154,7 @@ public class Register extends javax.swing.JFrame {
 //                dis.close();
 //                dos.close();
 //                s.close();
-                new login().setVisible(true);
+                new login(this.s,this.dis,this.dos).setVisible(true);
                 this.dispose();
             } else {
 
@@ -328,7 +331,7 @@ public class Register extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
 
-                new Register().setVisible(false);
+                new Register(s,dis,dos).setVisible(false);
 
 //               
             }

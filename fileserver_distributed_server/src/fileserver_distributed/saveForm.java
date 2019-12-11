@@ -13,6 +13,7 @@ import fileserver_distributed.ShowImage;
 import fileserver_distributed.Data;
 import fileserver_distributed.Fileserver_distributed;
 import fileserver_distributed.Home;
+import java.awt.Frame;
 //package CustomFileVisitor;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
@@ -33,6 +34,7 @@ import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 /**
  *
@@ -42,9 +44,9 @@ public class saveForm extends javax.swing.JFrame {
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private DefaultListModel mod = new DefaultListModel();
-    private Socket s = Fileserver_distributed.s;
-    private DataInputStream dis= Fileserver_distributed.dis;
-    private DataOutputStream dos= Fileserver_distributed.dos ;
+    private static Socket s;
+    private static DataInputStream dis;
+    private static DataOutputStream dos;
     private ServerSocket sv = Fileserver_distributed.sv;
        Data data;
        
@@ -54,9 +56,13 @@ public class saveForm extends javax.swing.JFrame {
      * Creates new form saveForm
      */
    
-    public saveForm(String path) {
+    public saveForm(String path,Socket s ,DataInputStream dis , DataOutputStream dos) {
         this.paths = path;
         this.pathNow = path;
+        this.s = s;
+        this.dis = dis;
+        this.dos = dos;
+        
         initComponents();
         
           list.setModel(mod);
@@ -66,33 +72,22 @@ public class saveForm extends javax.swing.JFrame {
          try {
                     in = new ObjectInputStream(s.getInputStream());
                     txt.append("Server stating ...\n");
-                    
-                   data = (Data) in.readObject();
-                    mod.addElement(data);
+//                     while (true) {
+                        data = (Data) in.readObject();
+                        mod.addElement(data);
                         txt.append("get 1 file ... \n");
                         System.out.println(data);
-//                    System.out.println("fileserver_distributed.saveForm.<init>()");
-//                    String name = data.getName();
-//                    txt.append("New client " + name + " has been connected ...\n");
-//                    while ((Data) in.readObject()) {
-//                        data = (Data) in.readObject();
-//                        mod.addElement(data);
-//                        txt.append("get 1 file ... \n");
+                          
 //                    }
-//                in.close();
-//                out.close();
-                    this.dispose();
-                      new Home().setVisible(false);
-//                    in.close();
-//                out.close();
+                        
                 } catch (Exception e) {
-                    this.dispose();
-                     new Home().setVisible(false);
+//                    this.dispose();
+//                     new Home().setVisible(false);
                     JOptionPane.showMessageDialog(saveForm.this, e, "Error", JOptionPane.ERROR_MESSAGE);
                 }
          
-         this.dispose();
-         new Home().setVisible(false);
+//         this.dispose();
+//         new Home().setVisible(false);
            
 
     }
@@ -112,17 +107,18 @@ public class saveForm extends javax.swing.JFrame {
 
     private void save() {
         Data data = (Data) mod.getElementAt(list.getSelectedIndex());
-        JFileChooser ch = new JFileChooser(paths);
-        int c = ch.showSaveDialog(this);
-        if (c == JFileChooser.APPROVE_OPTION) {
+//        JFileChooser ch = new JFileChooser(paths);
+//        int c = ch.showSaveDialog(this);
+//        if (c == JFileChooser.APPROVE_OPTION) {
             try {
-                FileOutputStream out = new FileOutputStream(ch.getSelectedFile());
+                FileOutputStream out = new FileOutputStream(this.pathNow+"/"+data.getName());
                 out.write(data.getFile());
                 out.close();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, e, "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
+//        }
+        
         this.dispose();
     }
     
@@ -146,6 +142,11 @@ public class saveForm extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         jLabel1.setText("Serve Save Panel");
@@ -172,7 +173,7 @@ public class saveForm extends javax.swing.JFrame {
         });
 
         jButton2.setFont(new java.awt.Font("Ubuntu", 1, 18)); // NOI18N
-        jButton2.setText("Open");
+        jButton2.setText("Open Images");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -181,30 +182,29 @@ public class saveForm extends javax.swing.JFrame {
 
         jLabel2.setFont(new java.awt.Font("Ubuntu", 1, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(254, 9, 15));
-        jLabel2.setText("make sure to select item from right first, before click save or open button");
+        jLabel2.setText("click save button, to confirm uploading....");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(192, 192, 192))
             .addGroup(layout.createSequentialGroup()
                 .addGap(50, 50, 50)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(55, 55, 55)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(74, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel2)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(55, 55, 55)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(50, Short.MAX_VALUE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(192, 192, 192))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -212,8 +212,8 @@ public class saveForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -241,9 +241,9 @@ public class saveForm extends javax.swing.JFrame {
     }//GEN-LAST:event_listMouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (!list.isSelectionEmpty()) {
+//        if (!list.isSelectionEmpty()) {
                     save();
-                }     
+//                }     
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -253,6 +253,23 @@ public class saveForm extends javax.swing.JFrame {
         }
          // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
+ final JFrame frame = new JFrame();
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+         if (JOptionPane.showConfirmDialog(this,"Are you sure you want to close this window?", "Close Window?", 
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+            try{
+                dis.close();
+                dos.close();
+                s.close();
+            }
+            catch(Exception ex){
+                JOptionPane.showMessageDialog(null, "now it is closed");
+            }
+            System.exit(0);
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
@@ -284,7 +301,7 @@ public class saveForm extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new saveForm(pathNow).setVisible(true);
+                new saveForm(pathNow,s,dis,dos).setVisible(true);
             }
         });
     }

@@ -45,10 +45,10 @@ public class Home extends javax.swing.JFrame {
     private ArrayList<String> cdLists;
     private String pathForOperation , ContinuedPathForOperation;
     private ServerSocket sv = Fileserver_distributed.sv;
-    private Socket s = Fileserver_distributed.s;
-    private DataInputStream dis= Fileserver_distributed.dis;
-    private DataOutputStream dos= Fileserver_distributed.dos ;
-    private String srvr_msg;
+    private static Socket s;
+    private static DataInputStream dis;
+    private static DataOutputStream dos;
+    private static String srvr_msg;
 
     
     
@@ -137,11 +137,13 @@ public class Home extends javax.swing.JFrame {
     
 }
     
-    public Home(String path) {
+    public Home(String path,Socket s ,DataInputStream dis , DataOutputStream dos) {
         try
         {
             
-            
+            this.dis = dis;
+            this.dos=dos;
+            this.s=s;
             initComponents();
                 setSize(750,505);
                setLocation(100,100);
@@ -320,7 +322,7 @@ public class Home extends javax.swing.JFrame {
                            System.out.println("hello from download!");
                             boolean found = false;
                             String [] filess= listDirectoriesOnFilesOnly();
-                           
+                           FileInputStream fis  = null;
                                 try{
                                       assal = dis.readUTF();
                                      for (int i = 0; i < filess.length; i++) {
@@ -330,48 +332,64 @@ public class Home extends javax.swing.JFrame {
                                             break;
                                         }
                                     }
+                                    
                                     if(!found){
                                         dos.writeUTF("notFound");
                                         dos.flush();
                                     }
-                                    if(found){
-                                         dos.writeUTF("Found");
-                                        dos.flush();
-                                          File file = new File(cdAhlam+"/"+assal);
-                                    FileInputStream fis = new FileInputStream(file);
-                                     byte b []=new byte [5000];
-                                     fis.read(b,0,b.length);
-                                     OutputStream os = s.getOutputStream();
-//                                     os.flush(); 
-//                                     fis.close();
-//                                     os.close();
-//                                this.dispose();
-//                                    new Home(this.PathNow).setVisible(false);
-//                                    this.dispose();
+                                    try{
+                                        if(found){
+                                             dos.writeUTF("Found");
+                                            dos.flush();
+                                              File file = new File(cdAhlam+"/"+assal);
+                                         fis = new FileInputStream(file);
+                                         byte b []=new byte [5000];
+                                         fis.read(b,0,b.length);
+                                         OutputStream os = s.getOutputStream();
+                                         os.write(b, 0, b.length);
+                                         os.flush();
+//                                         if(fis!=null)
+//                                            fis.close();
+                                        }
+                                    }
+                                    catch(IOException ex){
+//                                      JOptionPane.showMessageDialog(null, ex.getMessage());
+                                        JOptionPane.showMessageDialog(null, "kdkd");
+
+                                      }
+                                    finally {
+                                        try { if (fis == null) fis.close(); } catch(Exception e){
+
+                                        }
+                                        
+
                                     }
                                 }
                                 catch(Exception e){
-                                    JOptionPane.showMessageDialog(null, e.getMessage());
+                                    JOptionPane.showMessageDialog(null, "kdk");
 //                                    JOptionPane.showMessageDialog(null, e.getMessage());
                                 }
                         }
                          else if(assal.equals("upload")){
-//                            listDirectories(true);
-//                                this.dispose();
-                            new saveForm(cdAhlam).setVisible(true);
-                           System.out.println("hello from upload!");
-//                            boolean found = false;
-                             try{
-                                 new Home().setVisible(false);
-                                    System.out.println("svae form");
-                                    
-//                                    this.dispose();
-                              }
-                             catch(Exception e){
-                                 new Home().setVisible(false);
-                                    JOptionPane.showMessageDialog(null, e.getMessage());
-                              }
-                             new Home().setVisible(false);
+                             System.out.println("hrl");
+//                            String  jfram = dis.readUTF();
+//                            System.out.println(jfram);
+//                            if(jfram.equals("choose")){
+                                    new saveForm(cdAhlam,s,dis,dos).setVisible(true);
+                                   System.out.println("hello from upload!");
+        //                            boolean found = false;
+                                     try{
+//                                         new Home().setVisible(false);
+                                            System.out.println("save form");
+
+        //                                    this.dispose();
+                                      }
+                                     catch(Exception e){
+//                                         new Home().setVisible(false);
+                                            JOptionPane.showMessageDialog(null, e.getMessage());
+                                      }
+//                            }
+//                             new Home().setVisible(false);
                                 
                         }
                
@@ -379,7 +397,8 @@ public class Home extends javax.swing.JFrame {
                else{
                    System.out.println("not defined command!");
                }
-                trimPaths(PathNow);
+                trimPaths(this.PathNow);
+                   System.out.println(ContinuedPathForOperation);
                 dos.writeUTF(ContinuedPathForOperation);
                 dos.flush();
                }
@@ -388,7 +407,8 @@ public class Home extends javax.swing.JFrame {
         }
         catch(IOException ex)
         {
-           JOptionPane.showMessageDialog(null,"problem occured during connection: "+ex.getMessage());
+            
+           JOptionPane.showMessageDialog(null,"confirmed: successfuly closing your session socket");
 
         }
         
@@ -1033,7 +1053,7 @@ public class Home extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Home(PathNow ).setVisible(true);
+                new Home(PathNow,s,dis,dos ).setVisible(true);
             }
         });
     }
