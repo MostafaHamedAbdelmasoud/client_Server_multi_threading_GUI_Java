@@ -26,14 +26,14 @@ public class login extends javax.swing.JFrame {
      */
     public login() {
         try{
-//            s = new Socket("127.0.0.1", 1234);
-//    //            s = new Socket("192.168.43.250", 1234);
-//               dis = new DataInputStream(s.getInputStream());
-//               dos = new DataOutputStream(s.getOutputStream());
+            initComponents();
+           setSize(752,505);
+           setLocation(100,100);
+           setResizable(false);
                 System.out.println("client Side");
 //                dos.writeUTF("login");
 //                dos.flush();
-            initComponents();
+//            initComponents();
         }
          catch(Exception ex){
             try{

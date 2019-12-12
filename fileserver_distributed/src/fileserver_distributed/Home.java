@@ -92,36 +92,6 @@ public class Home extends javax.swing.JFrame {
     }
     
     
-//    public void acceptDownload(){
-//        try{
-//            int filesize=1022386; 
-//            int bytesRead; 
-//            int currentTot = 0; 
-//    //        Socket socket = new Socket("127.0.0.1",15123); 
-//            byte [] bytearray = new byte [filesize]; 
-//    //        InputStream is = socket.getInputStream(); 
-//            FileOutputStream fos = new FileOutputStream("copy.doc"); 
-//            BufferedOutputStream bos = new BufferedOutputStream(fos); 
-//            bytesRead = dis.read(bytearray,0,bytearray.length); 
-//            currentTot = bytesRead; 
-//            do { 
-//                bytesRead = dis.read(bytearray, currentTot, (bytearray.length-currentTot)); 
-//                if(bytesRead >= 0) currentTot += bytesRead; 
-//            } while(bytesRead > -1); 
-//            bos.write(bytearray, 0 , currentTot);
-//            bos.flush(); 
-//
-//            bos.close(); 
-//    //        socket.close();
-//        }
-//        catch(Exception ex){
-//           JOptionPane.showMessageDialog(null, ex.getMessage());
-//
-//        }
-//    //Read more: http://mrbool.com/file-transfer-between-2-computers-with-java/24516#ixzz67cpqJzdX
-//    }
-//    
-   
     public void acceptDownload(String FileUploaded){
         try {
             
@@ -181,6 +151,7 @@ public class Home extends javax.swing.JFrame {
         });
         getContentPane().setLayout(null);
 
+        jComboBox1.setFont(new java.awt.Font("Ubuntu", 1, 18)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -188,7 +159,7 @@ public class Home extends javax.swing.JFrame {
             }
         });
         getContentPane().add(jComboBox1);
-        jComboBox1.setBounds(86, 54, 148, 36);
+        jComboBox1.setBounds(86, 54, 148, 38);
 
         jButton1.setText("Submit");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -604,7 +575,7 @@ public class Home extends javax.swing.JFrame {
                 try {
                     dos.writeUTF("upload");
                     dos.flush();
-                    out = new ObjectOutputStream(s.getOutputStream());
+                    
                     FileInputStream in;
         //            out.writeObject("mostafa");
         //            out.flush();
@@ -621,8 +592,9 @@ public class Home extends javax.swing.JFrame {
                    
                     int c = ch.showOpenDialog(this);
                     if (c == JFileChooser.APPROVE_OPTION) {
-//                        dos.writeUTF("choose");
-//                        dos.flush();
+                        dos.writeUTF("choose");
+                        dos.flush();
+                        out = new ObjectOutputStream(s.getOutputStream());
                         File f = ch.getSelectedFile();
                          in = new FileInputStream(f);
                         byte b[] = new byte[in.available()];
@@ -636,13 +608,16 @@ public class Home extends javax.swing.JFrame {
                         System.out.println(data.getFile());
                         out.writeObject(data);
                         out.flush();
-                          
+                        JOptionPane.showMessageDialog(null, dis.readUTF());
+
                     }
                    if (c == JFileChooser.CANCEL_OPTION) {
                        try{
-//                        dos.writeUTF("notChoose");
-//                        dos.flush();
+                        dos.writeUTF("notChoose");
+                        dos.flush();
                         JOptionPane.showMessageDialog(null, "Cancel Option Chosen, Closing Now");
+                        
+                       
                        }
                        catch(Exception cf){
                             JOptionPane.showMessageDialog(null, "error not chose!");

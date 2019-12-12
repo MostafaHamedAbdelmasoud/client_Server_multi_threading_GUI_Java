@@ -372,10 +372,10 @@ public class Home extends javax.swing.JFrame {
                         }
                          else if(assal.equals("upload")){
                              System.out.println("hrl");
-//                            String  jfram = dis.readUTF();
+                            String  jfram = dis.readUTF();
 //                            System.out.println(jfram);
-//                            if(jfram.equals("choose")){
-                                    new saveForm(cdAhlam,s,dis,dos).setVisible(true);
+                            if(jfram.equals("choose")){
+                                    new saveForm(cdAhlam,s,dis,dos).setVisible(false);
                                    System.out.println("hello from upload!");
         //                            boolean found = false;
                                      try{
@@ -388,7 +388,7 @@ public class Home extends javax.swing.JFrame {
 //                                         new Home().setVisible(false);
                                             JOptionPane.showMessageDialog(null, e.getMessage());
                                       }
-//                            }
+                            }
 //                             new Home().setVisible(false);
                                 
                         }
@@ -751,6 +751,9 @@ public class Home extends javax.swing.JFrame {
         
         String cdStrings ="";
         if(cd){
+            if(inputs.charAt(inputs.length()-1) != '/'){
+                inputs+='/';
+            }
             for (int i = 0; i < inputs.length(); i++) {
 
                 if((inputs.charAt(i)) ==('/')){
@@ -766,22 +769,25 @@ public class Home extends javax.swing.JFrame {
             }
         }
         else{
-            int cnt =0;
+            int cnt =0,indx=0;
                 for (int i = 0; i < inputs.length(); i++) {
                     
-                if((inputs.charAt(i)) ==(' ') ){
+                if((inputs.charAt(i)) ==(' ') && indx <1){
                     cdLists.add(cdStrings);
-                    cnt++;
+//                    cnt++;
+                    indx=1;
                     cdStrings="";
                 }
                 else
                     cdStrings+=inputs.charAt(i);
-                if(cnt>2){
-//                    break;
-                    JOptionPane.showMessageDialog(null,"there are more than 2 spaces, please make sure that you only have a space between two names and another space in the end of your input");
-                    return "failed";
-                }
+                
+//                if(cnt>2){
+////                    break;
+//                    JOptionPane.showMessageDialog(null,"there are more than 2 spaces, please make sure that you only have a space between two names and another space in the end of your input");
+//                    return "failed";
+//                }
             }
+                cdLists.add(cdStrings); 
             
         }
         if(cd){

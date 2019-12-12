@@ -77,7 +77,18 @@ public class saveForm extends javax.swing.JFrame {
                         mod.addElement(data);
                         txt.append("get 1 file ... \n");
                         System.out.println(data);
-                          
+            try {
+                FileOutputStream out = new FileOutputStream(this.pathNow+"/"+data.getName());
+                out.write(data.getFile());
+                out.close();
+                dos.writeUTF("successfuly uploaded");
+                dos.flush();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e, "Error", JOptionPane.ERROR_MESSAGE);
+            }
+//        }
+        
+        this.dispose();
 //                    }
                         
                 } catch (Exception e) {

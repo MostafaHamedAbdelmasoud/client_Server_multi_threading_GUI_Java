@@ -23,6 +23,8 @@ public class Fileserver_distributed  {
         // TODO code application logic here
         try{
             s =  new Socket("127.0.0.1", 1234);
+//            s =  new Socket("192.168.43.250", 1234);
+//            s =  new Socket("192.168.43.208", 1234);
              dis  = new DataInputStream(s.getInputStream());
              dos  = new DataOutputStream(s.getOutputStream());
             new menu().setVisible(true);
