@@ -35,6 +35,3 @@ https://www.youtube.com/watch?v=jTTFWyc2-Gw&feature=youtu.be
 
 ### 6- then run client code after that.
 
-
-## video in arabic
-https://www.youtube.com/watch?v=jTTFWyc2-Gw&feature=youtu.be
