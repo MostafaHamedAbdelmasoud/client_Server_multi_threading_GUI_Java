@@ -21,9 +21,9 @@ https://www.youtube.com/watch?v=jTTFWyc2-Gw&feature=youtu.be
 
 # config
 
-### 1- after downloading, you will have source code (%server & %client).
+### 1- after downloading, you should extract zip folders (Server & Client).
 
-### 2- you need to put (ip address of server computer) in a client computer and connect them with the same WiFi like 
+### 2- you need to put (ip address of server computer) in a client source code computer and connect them with the same WiFi like 
 ### in ```bash s =  new Socket("192.168.43.208", 1234); ``` change ```192.168.43.208``` to ```127.0.0.1```.
 
 ### 3- you need to config the path in server code to make operations.
