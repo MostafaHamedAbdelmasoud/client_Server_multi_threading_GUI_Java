@@ -1,5 +1,6 @@
 # File_Server_GUI_Java
-it is a project which shows how to connect two computers with each others and on of them act as a client and the other act as a client 
+It is a project which shows how to connect two computers with each others.
+One of them act as a client and the other act as a server support multi threading. 
 
 
 # video in arabic
@@ -12,7 +13,7 @@ https://www.youtube.com/watch?v=jTTFWyc2-Gw&feature=youtu.be
 ### java
 ### netbeans IDE
 ### operating system (windows 10 or ubunut 18.04 LTS)
-### WIFI or Ethernet
+### WIFI or Ethernet connection between server and client
 
 ![](login.png)
 
